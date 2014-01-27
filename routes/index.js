@@ -38,3 +38,9 @@ exports.list = function (req, res) {
 		flights: flights
 	});
 };
+
+exports.test1  = function (req, res) {
+	res.render('test1', {
+		'title': 'Initial Test Mock'
+	});	
+};
