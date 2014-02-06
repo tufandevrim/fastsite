@@ -28,7 +28,7 @@
         }
     </style>
     <link href="https://s3.yimg.com/zz/combo?/os/mit/td/stencil-0.1.229/stencil-css-s/stencil-css-s-min.css" rel="stylesheet" type="text/css">
-    
+    <script>var t0 = new Date().getTime();</script>
     
     <script>
     var myYahoostartTime = new Date(),
@@ -2237,7 +2237,27 @@ YMedia.applyConfig({"groups":{"td-applet-stream":{"base":"https://s1.yimg.com/os
 
     <!-- Nav API -->
     
+<script>
+var img = new Image(),
+    t1 = new Date().getTime(),
+    delta = t1 - t0;
 
+    img.src="http://l.yimg.com/nn/lib/metro/p1.gif?delta="+delta;
+
+function loadXMLDoc() {
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange=function() {
+        if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+            //document.getElementById("myDiv").innerHTML=xmlhttp.responseText;
+        }
+    };
+
+    xmlhttp.open("GET","streamdatamin.json",true);
+    xmlhttp.send();
+}
+loadXMLDoc(); 
+
+</script>
     <!-- Via HTTPS/1.1 qa2-ir1.my.sp2.yahoo.com[628B7C36] (YahooTrafficServer/1.20.13 [uSc ]) -->
     <!-- sid=1197228339 -->
 
