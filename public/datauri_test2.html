@@ -1,0 +1,30 @@
+
+<!DOCTYPE html>
+<html style="background-color:#000000;">
+    <head>
+        <title>Test data-uri on mobile</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+        <link rel="apple-touch-icon" sizes="" href="" />
+        <meta http-equiv="X-UA-Compatible" content="chrome=1">
+        <meta name="format-detection" content="telephone=no" />
+        <link rel="shortcut icon" href="https://s.yimg.com/rz/l/favicon.ico" /> 
+        <!--<link href="https://s3.yimg.com/zz/combo?/os/mit/td/stencil-0.1.229/stencil-css-s/stencil-css-s-min.css" rel="stylesheet" type="text/css">-->
+        <!--<link href="https://s.yimg.com/zz/combo?os/mit/media/m/weather/weather-conditions-min-1476260.css" rel="stylesheet" type="text/css">-->
+        <link href="data_uri_sunny_svg.css" rel="stylesheet" type="text/css">
+        <script>var t0 = new Date().getTime();</script>
+        
+    </head>
+    <body style="background-color:#000000;">
+        <div class="wc-sunny" style="width:60px;height:60px;"></div>
+
+
+        <script>
+            var img = new Image(),
+                t1 = new Date().getTime(),
+                delta = t1 - t0;
+            img.src="http://l.yimg.com/nn/lib/metro/p1.gif?delta="+delta;
+
+        </script>
+    </body>
+</html>
