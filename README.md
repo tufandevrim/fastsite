@@ -1,5 +1,5 @@
 Fast Site
 ========
 
-high performance web site prototypes with nodejs
+This project is mostly used for client site perfromance testing for creating super web sites.
 
