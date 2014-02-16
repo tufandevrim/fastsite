@@ -28,7 +28,36 @@
         }
         </style>
         <script>
-            document.write(window.localStorage.getItem("stencil"));
+
+            var locSt = window.localStorage.getItem("stencil");
+            var head = document.getElementsByTagName("head")[0];
+            var styleEl = document.createElement("style");
+            styleEl.type = "text/css";
+            
+            if (locSt) {
+                styleEl.appendChild(document.createTextNode(locSt));
+                head.appendChild(styleEl);
+
+            } else {
+
+                var url = "stencil.css";
+                var xhr = new XMLHttpRequest();
+                xhr.open("GET", url, false);
+                xhr.send();
+                if (xhr.status === 200) {
+
+                    window.localStorage.setItem("stencil", xhr.responseText);
+                    locSt = window.localStorage.getItem("stencil");
+                    styleEl.appendChild(document.createTextNode(locSt));
+                    head.appendChild(styleEl);
+                }
+
+
+            }
+
+
+
+            
         </script>
 	</head>
 	<body>
