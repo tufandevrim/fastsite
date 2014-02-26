@@ -17,7 +17,9 @@
 <body>
     <h1>Iframe - Dynamic Asynch</h1>
         
-    <ul>
+    
+    
+   <ul>
         <li>Iframe is created dynamically with JS, via the Meebo Bar 'trick'
         <li>Creation of iframe happens *before* onload
         <li>Onload of the iframe fires instantly, because the iframe content is loaded after onload (yeah!)
@@ -26,29 +28,11 @@
         <li>If you would *not* use the onload handler in the iframe, the iframe loading would delay the main page onload
         <li>While the iframe is loading, one or more browser busy indicators show something is loading
     </ul>
-    
     <div id="ad_container"></div>
- 
+
     <p>
         <img src="http://www.aaronpeters.nl/sandbox/images/calendar.png" width="128" height="128" alt=""><br>
     </p>
-    
- <div>
-     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla blandit lectus ut neque ornare, eget sollicitudin dui placerat. Nunc eu ante sed metus tempor vehicula rutrum sit amet urna. Nulla malesuada massa eu ante luctus ultrices. Quisque vel convallis metus, in congue nulla. Suspendisse sit amet aliquam quam. In hac habitasse platea dictumst. Aenean et vehicula augue, ut ultricies ante. Vivamus in aliquet risus. Aliquam malesuada elementum massa, sit amet feugiat quam luctus eget. Vivamus velit nunc, feugiat sed arcu sit amet, vestibulum hendrerit libero. Suspendisse lacinia luctus gravida. Ut turpis quam, porta quis feugiat ac, consectetur quis leo.
-
-In rutrum felis quis metus adipiscing, sit amet mollis purus convallis. Praesent neque libero, dapibus vitae massa vel, molestie rutrum erat. Pellentesque a leo turpis. Duis ultrices in velit vitae aliquam. Donec quis pulvinar velit, nec pharetra sem. Fusce sit amet laoreet leo, nec blandit felis. Aliquam viverra justo nec enim consequat semper. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Nullam eu tellus vel purus ultricies feugiat eget quis lacus. Nullam mollis purus nec lectus tempor, in pharetra quam lacinia. Vestibulum tincidunt volutpat tincidunt. Suspendisse elementum, nunc ac ullamcorper commodo, urna mi ultricies justo, et volutpat diam ante vitae enim. Nunc volutpat, orci id convallis viverra, nisl tellus vestibulum ante, nec fermentum arcu dolor id leo. Maecenas a dui vitae turpis ultricies sollicitudin eget vel felis. Morbi justo justo, malesuada quis convallis vel, facilisis vel nulla. Aenean ultrices nulla id massa placerat congue.
-
-Etiam laoreet libero ante. Integer odio tellus, sagittis ac ipsum lacinia, varius convallis diam. Sed ac turpis quam. Cras porttitor urna augue, vel porta eros pulvinar in. Integer feugiat tempus arcu, vitae lacinia urna varius et. Nulla vel tincidunt sem. Nam tempus mi ut justo lacinia, a mollis metus pretium. Nunc gravida tincidunt metus, sed tempus massa porta et. Nam dolor nulla, pharetra eu eleifend non, imperdiet in nulla.
-
-Donec porta purus eget massa ultricies fermentum quis vitae libero. Donec et eros et risus lobortis volutpat. Duis fermentum risus vitae neque rhoncus tristique. Nullam fringilla laoreet sem, eu dictum tortor hendrerit nec. Aenean varius nisi quis nunc lobortis dapibus. Mauris eget mi quis purus tempus congue. Aliquam erat volutpat. Curabitur porttitor ipsum vitae nibh vehicula euismod. Morbi condimentum sollicitudin nulla, id rutrum quam euismod quis. Mauris nec dolor quis purus elementum imperdiet. Curabitur luctus ligula quis eros tempor, aliquet euismod est mattis. Donec tincidunt imperdiet eros, id fermentum tellus sodales eget. Duis varius est at enim blandit consequat. Suspendisse ut orci nisi. Phasellus nisi ante, auctor quis scelerisque nec, mattis eget libero.
-
-Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Phasellus consequat libero sed nibh porta ultrices. Ut feugiat mauris mi, sit amet semper nunc sollicitudin in. Suspendisse tellus nunc, sollicitudin vitae turpis a, ullamcorper posuere purus. Nunc lacus purus, interdum et elementum eget, pellentesque et augue. Curabitur sit amet porttitor nulla, pulvinar congue enim. Nunc diam nulla, molestie sed hendrerit ut, accumsan ac neque. Fusce eleifend nulla ac tempus fermentum. Suspendisse vestibulum arcu lacus, vel ultricies leo gravida et. Praesent et scelerisque dui. Proin et porta nunc. Aliquam gravida enim neque, ut venenatis tellus aliquam mollis.
- </div>
-
-
-
-
-   
 
 <script>
     
@@ -57,7 +41,6 @@ Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia
         var iframe = d.body.appendChild(d.createElement('iframe')),
             doc = iframe.contentWindow.document;
         
-        iframe.style.cssText = "position:absolute;width:200px;height:100px;left:0px;";
         
         // This math.random stuff is only for the purpose of this test page
         var a = Math.random() + "";
