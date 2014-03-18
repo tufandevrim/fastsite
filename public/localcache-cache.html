@@ -955,7 +955,83 @@ var img = new Image(),
     img.src="https://s1.yimg.com/nn/lib/metro/p1.gif?delta="+delta;
 
 </script>
+<script type='text/javascript'>
+        var startDate = new Date().getTime(),
+        _bTestResults;
+    function doLoad() {    
+        var navigationStart = 0, unloadEventStart = -1, unloadEventEnd = -1, redirectStart = -1, 
+            redirectEnd = -1, fetchStart = -1, domainLookupStart = -1, domainLookupEnd = -1, 
+            connectStart = -1, connectEnd = -1, secureConnectionStart = -1, requestStart = -1,
+            responseStart = -1, responseEnd = -1, domLoading = -1, domInteractive = -1, domContentLoadedEventStart = -1,
+            domContentLoadedEventEnd = -1, domComplete = new Date().getTime() - startDate, 
+            loadEventStart = -1, loadEventEnd = -1, epoch = Math.round(startDate / 1000), test1 = -1, test2 = -1;
 
+        if(window.performance && window.performance.timing) {
+            var T = window.performance.timing;
+            navigationStart = 0,
+            unloadEventStart = T.unloadEventStart > 0 ? T.unloadEventStart - T.navigationStart : -1;
+            unloadEventEnd = T.unloadEventEnd > 0 ? T.unloadEventEnd - T.navigationStart : -1;
+            redirectStart = T.redirectStart > 0 ? T.redirectStart - T.navigationStart : -1;
+            redirectEnd = T.redirectEnd > 0 ? T.redirectEnd - T.navigationStart : -1;
+            fetchStart = T.fetchStart > 0 ? T.fetchStart - T.navigationStart : -1;
+            domainLookupStart = T.domainLookupStart > 0 ? T.domainLookupStart - T.navigationStart : -1;
+            domainLookupEnd = T.domainLookupEnd > 0 ? T.domainLookupEnd - T.navigationStart : -1;
+            connectStart = T.connectStart > 0 ? T.connectStart - T.navigationStart : -1;
+            connectEnd = T.connectEnd > 0 ? T.connectEnd - T.navigationStart : -1;
+            secureConnectionStart = T.secureConnectionStart > 0 ? T.secureConnectionStart - T.navigationStart : -1;
+            requestStart = T.requestStart > 0 ? T.requestStart - T.navigationStart : -1;
+            responseStart = T.responseStart > 0 ? T.responseStart - T.navigationStart : -1;
+            responseEnd = T.responseEnd > 0 ? T.responseEnd - T.navigationStart : -1;
+            domLoading = T.domLoading > 0 ? T.domLoading - T.navigationStart : -1;
+            domInteractive = T.domInteractive > 0 ? T.domInteractive - T.navigationStart : -1;
+            domContentLoadedEventStart = T.domContentLoadedEventStart > 0 ? T.domContentLoadedEventStart - T.navigationStart : -1;
+            domContentLoadedEventEnd = T.domContentLoadedEventEnd > 0 ? T.domContentLoadedEventEnd - T.navigationStart : -1;
+            domComplete = T.domComplete > 0 ? T.domComplete - T.navigationStart : -1;
+            loadEventStart = T.loadEventStart > 0 ? T.loadEventStart - T.navigationStart : -1;
+            loadEventEnd = T.loadEventEnd > 0 ? T.loadEventEnd - T.navigationStart : -1;
+        }
+        
+        test1 = delta;
+
+        _bTestResults = {
+        'epoch': epoch,
+          'navigationStart': navigationStart,
+          'unloadEventStart': unloadEventStart,
+          'unloadEventEnd': unloadEventEnd,
+          'redirectStart': redirectStart,
+          'redirectEnd': redirectEnd,
+          'fetchStart': fetchStart,
+          'domainLookupStart': domainLookupStart,
+          'domainLookupEnd': domainLookupEnd,
+          'connectStart': connectStart,
+          'connectEnd': connectEnd,
+          'secureConnectionStart': secureConnectionStart,
+          'requestStart': requestStart,
+          'responseStart': responseStart,
+          'responseEnd': responseEnd,
+          'domLoading': domLoading,
+          'domInteractive': domInteractive,
+          'domContentLoadedEventStart': domContentLoadedEventStart,
+          'domContentLoadedEventEnd': domContentLoadedEventEnd,
+          'domComplete': domComplete,
+          'loadEventStart': loadEventStart,
+          'loadEventEnd': loadEventEnd,
+          'test1': test1,
+          'test2': test2
+        };
+
+        var _bTestBeacon = function() {
+              var newScript = document.createElement('script'),
+                    firstScript = document.getElementsByTagName('script')[0];
+               newScript.src = 'http://www.browserscope.org/user/beacon/agt1YS1wcm9maWxlcnIRCxIEVGVzdBiAgID095SKCAw';
+              firstScript.parentNode.insertBefore(newScript, firstScript);
+        };
+        _bTestBeacon();        
+    }
+    if (window.addEventListener) { window.addEventListener( "load", doLoad, false); } 
+    else if ( windos.attachEvent ) { window.attachEvent( "onload", doLoad ); } 
+    else if ( window.onLoad ) { window.onload = doLoad; }
+    </script>
 
 	</body>
 
