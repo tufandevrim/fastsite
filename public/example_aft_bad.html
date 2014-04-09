@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>YAFT example1</title>
+	<style>
+		body, img, div {
+			margin: 0;
+			padding: 0;
+		}
+
+		.main_wrapper {
+			margin: 0 auto;
+			width: 900px;
+			height:700px;
+		}
+
+		.head {
+			width:900px;
+			height:100px;
+		}
+
+		.main {
+			width:600px;
+			height:600px;
+			float:left;
+		}
+		.ad {
+			width:300px;
+			height:600px;
+			float:left;
+		}
+
+
+	</style>
+</head>
+<body>
+	<div class="main_wrapper">
+		<div class="head">
+			<div id="module_head"></div>
+		</div>
+		<div class="main">
+			<div id="module_main"></div>
+		</div>
+		<div class="ad">
+			<div id="module_ad"></div>
+		</div>
+	</div>
+	<iframe src="http://eachstorm.corp.yahoo.com:8080/test/delay.php?addlatency=2100000" width="1" height="1" style="visibility:hidden;"></iframe>
+	<script type="text/javascript" src="../src/yaft2.js"></script>
+	<script>
+		var yaftConfig = {
+			modules: ['module'],
+			maxWaitTime: 4000,
+			useNormalizeCoverage: true
+		};
+		YAFT.init(yaftConfig, function(data,error) {
+			if (!error) {
+				console.log(data);
+			}
+		});
+
+		setTimeout(function(){
+			document.getElementById('module_head').innerHTML =  '<img src="https://farm4.staticflickr.com/3803/13630712315_cc3896bde5.jpg" width="900" height="100">';
+
+		},1000);
+
+		setTimeout(function(){
+			document.getElementById('module_main').innerHTML =  '<img src="http://farm4.staticflickr.com/3691/11307406494_77487cb1f3_c.jpg" width="600" height="600">';
+
+		},2000);
+		
+		setTimeout(function(){
+			document.getElementById('module_ad').innerHTML =  '<img src="http://farm8.staticflickr.com/7331/11307499934_dd2a6eda91.jpg"  width="300" height="600">';
+		},5000);
+
+	</script>
+</body>
+</html>
