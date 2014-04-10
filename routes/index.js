@@ -22,3 +22,7 @@ exports.delayedAsstes = function(req, res){
 		//res.end('Delayed: ' + addlatency + ' ms\nAsset: ' + assetName);
 	},addlatency);
 };
+
+exports.hello = function(req, res){
+		res.end('Hello world');
+};

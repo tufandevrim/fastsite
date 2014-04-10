@@ -28,6 +28,7 @@ if ('development' == app.get('env')) {
 
 app.get('/delay', routes.delay);
 app.get('/delayasset/:delay/:asset', routes.delayedAsstes);
+app.get('/hello', routes.hello);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
