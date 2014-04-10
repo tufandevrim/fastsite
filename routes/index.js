@@ -9,3 +9,16 @@ exports.delay = function(req, res){
 		res.end(' Delayed ' + addlatency + ' ms');
 	},addlatency);
 };
+exports.delayedAsstes = function(req, res){
+	var fs = require('fs'),
+		asset,
+		addlatency = req.param('delay') || 1000,
+		assetName = req.param('asset');// || 'header.png';
+
+	asset = fs.readFileSync('./public/img/'+assetName);
+	res.writeHead(200, {'Content-Type': 'image/png' });
+	setInterval(function() {
+		res.end(asset, 'binary');
+		//res.end('Delayed: ' + addlatency + ' ms\nAsset: ' + assetName);
+	},addlatency);
+};

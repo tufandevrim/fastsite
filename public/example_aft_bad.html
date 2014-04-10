@@ -36,13 +36,19 @@
 <body>
 	<div class="main_wrapper">
 		<div class="head">
-			<div id="module_head"></div>
+			<div id="module_head">
+				<img src="http://fastsite.herokuapp.com/delayasset/1000/header.png" width="900" height="100">
+			</div>
 		</div>
 		<div class="main">
-			<div id="module_main"></div>
+			<div id="module_main">
+				<img src="http://fastsite.herokuapp.com/delayasset/2000/main.png" width="600" height="600">
+			</div>
 		</div>
 		<div class="ad">
-			<div id="module_ad"></div>
+			<div id="module_ad">
+				<img src="http://fastsite.herokuapp.com/delayasset/5000/ad.png" width="300" height="600">
+			</div>
 		</div>
 	</div>
 	<iframe src="http://fastsite.herokuapp.com/delay?addlatency=2000" width="1" height="1" style="visibility:hidden;"></iframe>
@@ -58,20 +64,9 @@
 				console.log(data);
 			}
 		});
-
-		setTimeout(function(){
-			document.getElementById('module_head').innerHTML =  '<img src="https://farm4.staticflickr.com/3803/13630712315_cc3896bde5.jpg" width="900" height="100">';
-
-		},1000);
-
-		setTimeout(function(){
-			document.getElementById('module_main').innerHTML =  '<img src="http://farm4.staticflickr.com/3691/11307406494_77487cb1f3_c.jpg" width="600" height="600">';
-
-		},2000);
-		
-		setTimeout(function(){
-			document.getElementById('module_ad').innerHTML =  '<img src="http://farm8.staticflickr.com/7331/11307499934_dd2a6eda91.jpg"  width="300" height="600">';
-		},5000);
+		window.addEventListener('load', function() {
+			document.getElementById('module_ad').innerHTML =  '<img src="http://fastsite.herokuapp.com/delayasset/5000/ad.png"  width="300" height="600">';
+		}, false);
 
 	</script>
 </body>
