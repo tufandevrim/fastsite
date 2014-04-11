@@ -629,7 +629,7 @@
 					//add to modules report
 					prepareCustomModuleReport(el, { 
 						modStart: startTime,
-						modEnd: endTime,
+						modEnd: endTime
 					});
 				}
 			}
@@ -714,8 +714,9 @@
 			
 		},
 		getDomElementsCount: function(){
-			//TODO: iframes might not be included
-			return d.getElementsByTagName("*").length;
+			//it is exactly what WPT does but this shows a lot more. Why?
+			//https://code.google.com/p/webpagetest/source/browse/trunk/agent/browser/chrome/extension/wpt/script.js#77
+			return d.getElementsByTagName('*').length;
 		},
 		getTTFB: function() {
 			return perfExists ? perf.timing.responseStart - startTime : 0;
