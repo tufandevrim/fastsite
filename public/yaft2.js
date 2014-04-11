@@ -715,7 +715,7 @@
 		},
 		getDomElementsCount: function(){
 			//TODO: iframes might not be included
-			return d.getElementsByTagName('*').length;
+			return d.getElementsByTagName("*").length;
 		},
 		getTTFB: function() {
 			return perfExists ? perf.timing.responseStart - startTime : 0;
