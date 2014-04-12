@@ -156,8 +156,8 @@
 
 				scrollxy = this.getScrollXY();
 				tmpBound = this.elem.getBoundingClientRect();
-				bounding.top = tmpBound.prototype.top + scrollxy.y;
-				bounding.bottom = tmpBound.prototype.bottom + scrollxy.y;
+				bounding.top = tmpBound.top + scrollxy.y;
+				bounding.bottom = tmpBound.bottom + scrollxy.y;
 				bounding.left = tmpBound.left + scrollxy.x;
 				bounding.right = tmpBound.right + scrollxy.x;
 				return bounding;
