@@ -154,17 +154,12 @@
 				}
 
 				scrollxy = this.getScrollXY();
-
 				//Why did I have to clone it!!!
-				bounding = JSON.parse('"'+JSON.stringify(this.elem.getBoundingClientRect())+'"');
-				/*
 				try {
 					bounding = Object.create(this.elem.getBoundingClientRect());
 				} catch (err) {
 					bounding = JSON.parse(JSON.stringify(this.elem.getBoundingClientRect()));
 				}
-				*/
-
 				bounding.top = bounding.top + scrollxy.y;
 				bounding.bottom = bounding.bottom + scrollxy.y;
 				bounding.left = bounding.left + scrollxy.x;
@@ -173,8 +168,11 @@
 			},
 			isInViewport : function(e) {
 				var bounds = this.getElementBounds(e);
-				return (bounds.top < this.viewportHeight && bounds.left < this.viewportWidth
-						&& bounds.bottom >= 0 && bounds.right >= 0); //adding bounds.bottom and bounds.right limit
+				//adding bounds.bottom and bounds.right limit
+				return (bounds.top < this.viewportHeight && 
+						bounds.left < this.viewportWidth &&
+						bounds.bottom >= 0 && 
+						bounds.right >= 0);
 			},
 			getElementCoverage : function(e) {
 				var bounds = this.getElementBounds(e),
