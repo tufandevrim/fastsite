@@ -29,6 +29,19 @@
 		visuallyComplete = 0,
 		modulesReport = {};
 
+	function cloneObject(obj) {
+		var clone = {},
+			i;
+		for(i in obj) {
+			if (typeof(obj[i]) === 'object' && obj[i] !== null) {
+				clone[i] = cloneObject(obj[i]);
+			} else {
+				clone[i] = obj[i];
+			}
+		}
+		return clone;
+	}
+
 	/**
 	 * Creates array of timing entries from Navigation and Resource Timing Interfaces
 	 * @returns {object[]}
@@ -142,16 +155,6 @@
 					elem,
 					bounding;
 				
-				function cloneObject(obj) {
-					var clone = {};
-					for(var i in obj) {
-						if(typeof(obj[i])==='object' && obj[i] !== null)
-							clone[i] = cloneObject(obj[i]);
-						else
-							clone[i] = obj[i];
-					}
-					return clone;
-				}
 				elem = d.getElementById(e);
 				scrollxy = this.getScrollXY();
 
