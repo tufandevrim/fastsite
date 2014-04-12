@@ -131,8 +131,8 @@
 			getScrollXY: function() {
 				//TODO: use raf to reduce layout
 				return {
-					x: w.scrollX,
-					y: w.scrollY
+					x: w.scrollX || w.pageXOffset,
+					y: w.scrollY || w.pageYOffset
 				};
 			},
 			getViewportArea : function() {
