@@ -4,6 +4,7 @@
  */
 
 var express = require('express');
+var routes = require('./routes');
 var http = require('http');
 var path = require('path');
 
@@ -24,6 +25,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
+
+app.get('/delay', routes.delay);
+app.get('/delayasset/:delay/:asset', routes.delayedAsstes);
+app.get('/hello', routes.hello);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
