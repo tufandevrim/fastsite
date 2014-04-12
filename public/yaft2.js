@@ -142,6 +142,7 @@
 				var celem,
 					scrollxy,
 					y,
+					tmpBound,
 					bounding;
 
 
@@ -154,16 +155,11 @@
 				}
 
 				scrollxy = this.getScrollXY();
-				//Why did I have to clone it!!!
-				try {
-					bounding = Object.create(this.elem.getBoundingClientRect());
-				} catch (err) {
-					bounding = JSON.parse(JSON.stringify(this.elem.getBoundingClientRect()));
-				}
-				bounding.top = bounding.top + scrollxy.y;
-				bounding.bottom = bounding.bottom + scrollxy.y;
-				bounding.left = bounding.left + scrollxy.x;
-				bounding.right = bounding.right + scrollxy.x;
+				tmpBound = this.elem.getBoundingClientRect();
+				bounding.top = tmpBound.prototype.top + scrollxy.y;
+				bounding.bottom = tmpBound.prototype.bottom + scrollxy.y;
+				bounding.left = tmpBound.left + scrollxy.x;
+				bounding.right = tmpBound.right + scrollxy.x;
 				return bounding;
 			},
 			isInViewport : function(e) {
