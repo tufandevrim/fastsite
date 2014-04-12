@@ -670,7 +670,7 @@
 
 			if (perf && perf.timing && (perf.getEntriesByType !== undefined || perf.webkitGetEntriesByType !== undefined)) {
 				startTime = perf.timing.navigationStart;
-				perf.now = perf.now || perf.webkitNow || perf.msNow || perf.mozNow || function () { return Date().getTime() - startTime; };
+				perf.now = perf.now || perf.webkitNow || perf.msNow || perf.mozNow || function () { return new Date().getTime() - startTime; };
 				perfExists = true;
 			} else {
 				callback(null, 'Nav or resource timing or both are not available');
