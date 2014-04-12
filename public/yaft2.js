@@ -143,7 +143,7 @@
 					scrollxy,
 					y,
 					tmpBound,
-					bounding;
+					bounding = {};
 
 
 				if (this.elem === null || this.elem === undefined || this.elem.nodeType !== 1 || this.elem.id !== e) {
