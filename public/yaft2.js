@@ -156,7 +156,14 @@
 				scrollxy = this.getScrollXY();
 
 				//Why did I have to clone it!!!
-				bounding = JSON.parse(JSON.stringify(this.elem.getBoundingClientRect()));
+				bounding = JSON.parse('"'+JSON.stringify(this.elem.getBoundingClientRect())+'"');
+				/*
+				try {
+					bounding = Object.create(this.elem.getBoundingClientRect());
+				} catch (err) {
+					bounding = JSON.parse(JSON.stringify(this.elem.getBoundingClientRect()));
+				}
+				*/
 
 				bounding.top = bounding.top + scrollxy.y;
 				bounding.bottom = bounding.bottom + scrollxy.y;
