@@ -131,8 +131,8 @@
 			getScrollXY: function() {
 				//TODO: use raf to reduce layout
 				return {
-					x: w.scrollX || w.pageXOffset,
-					y: w.scrollY || w.pageYOffset
+					x: w.scrollX,
+					y: w.scrollY
 				};
 			},
 			getViewportArea : function() {
@@ -142,8 +142,7 @@
 				var celem,
 					scrollxy,
 					y,
-					tmpBound,
-					bounding = {};
+					bounding;
 
 
 				if (this.elem === null || this.elem === undefined || this.elem.nodeType !== 1 || this.elem.id !== e) {
@@ -155,20 +154,20 @@
 				}
 
 				scrollxy = this.getScrollXY();
-				tmpBound = this.elem.getBoundingClientRect();
-				bounding.top = tmpBound.top + scrollxy.y;
-				bounding.bottom = tmpBound.bottom + scrollxy.y;
-				bounding.left = tmpBound.left + scrollxy.x;
-				bounding.right = tmpBound.right + scrollxy.x;
+
+				//Why did I have to clone it!!!
+				bounding = JSON.parse(JSON.stringify(this.elem.getBoundingClientRect()));
+
+				bounding.top = bounding.top + scrollxy.y;
+				bounding.bottom = bounding.bottom + scrollxy.y;
+				bounding.left = bounding.left + scrollxy.x;
+				bounding.right = bounding.right + scrollxy.x;
 				return bounding;
 			},
 			isInViewport : function(e) {
 				var bounds = this.getElementBounds(e);
-				//adding bounds.bottom and bounds.right limit
-				return (bounds.top < this.viewportHeight && 
-						bounds.left < this.viewportWidth &&
-						bounds.bottom >= 0 && 
-						bounds.right >= 0);
+				return (bounds.top < this.viewportHeight && bounds.left < this.viewportWidth
+						&& bounds.bottom >= 0 && bounds.right >= 0); //adding bounds.bottom and bounds.right limit
 			},
 			getElementCoverage : function(e) {
 				var bounds = this.getElementBounds(e),
