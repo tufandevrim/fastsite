@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Loading a module after load time</title>
+	<style>
+		body, img, div {
+			margin: 0;
+			padding: 0;
+		}
+		.title {
+			text-align: center;
+		}
+		.main_wrapper {
+			margin: 0 auto;
+			width: 900px;
+			height:700px;
+		}
+
+		.head {
+			width:900px;
+			height:100px;
+		}
+
+		.main {
+			width:600px;
+			height:600px;
+			float:left;
+		}
+		.ad {
+			width:300px;
+			height:600px;
+			float:left;
+		}
+	</style>
+</head>
+<body>
+	<div class="main_wrapper">
+		<div class="title">
+			Defer loading a module [AD] in above the fold
+		</div>
+		<div class="head">
+			<div id="module_head">
+				<img src="http://fastsite.herokuapp.com/delayasset/1000/header.png" width="900" height="100">
+			</div>
+		</div>
+		<div class="main">
+			<div id="module_main">
+				<img src="http://fastsite.herokuapp.com/delayasset/2000/main.png" width="600" height="600">
+			</div>
+		</div>
+		<div class="ad">
+			<div id="module_ad"></div>
+		</div>
+	</div>
+	<iframe src="http://fastsite.herokuapp.com/delay2?addlatency=1000" width="300" height="250"></iframe>
+	<script type="text/javascript" src="yaft2.js"></script>
+	<script type="text/javascript" src="yaft2-report.js"></script>
+	<script>
+		var yaftConfig = {
+			modules: ['module'],
+			maxWaitTime: 6000,
+			canShowVisualReport: true,
+			useNormalizeCoverage: true
+		};
+		YAFT.init(yaftConfig, function(data,error) {
+			if (!error) {
+				console.log(data);
+			}
+		});
+		window.addEventListener('load', function() {
+			document.getElementById('module_ad').innerHTML =  '<img src="http://fastsite.herokuapp.com/delayasset/3000/ad.png"  width="300" height="600">';
+		}, false);
+
+	</script>
+</body>
+</html>
