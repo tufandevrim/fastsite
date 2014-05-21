@@ -12,9 +12,10 @@ exports.delay = function(req, res){
 
 exports.delay2 = function(req, res){
 	var addlatency = req.param('addlatency') || 1000;
+	 res.setHeader('Content-Type', 'text/html');
 	//res.write('Hello\n');
 	setInterval(function() {
-		res.end(' Delayed ' + addlatency + ' ms' + '<img src"http://fastsite.herokuapp.com/delayasset/5000/img6.jpeg">');
+		res.end(' Delayed ' + addlatency + ' ms' + ' <img src"http://fastsite.herokuapp.com/delayasset/5000/img6.jpeg">');
 	},addlatency);
 };
 
