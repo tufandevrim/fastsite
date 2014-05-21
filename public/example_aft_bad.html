@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Defer loading a module after load time</title>
+	<title>Loading a module after load time</title>
 	<style>
 		body, img, div {
 			margin: 0;
@@ -54,10 +54,12 @@
 	</div>
 	<iframe src="http://fastsite.herokuapp.com/delay?addlatency=2000" width="1" height="1" style="visibility:hidden;"></iframe>
 	<script type="text/javascript" src="yaft2.js"></script>
+	<script type="text/javascript" src="yaft2-report.js"></script>
 	<script>
 		var yaftConfig = {
 			modules: ['module'],
 			maxWaitTime: 6000,
+			canShowVisualReport: true,
 			useNormalizeCoverage: true
 		};
 		YAFT.init(yaftConfig, function(data,error) {

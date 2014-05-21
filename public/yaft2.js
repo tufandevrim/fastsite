@@ -1,12 +1,11 @@
 ;(function (w, d) {
 	'use strict';
 	// don't allow this code to be included twice
-    if (w.YAFT !== undefined) {
-        return;
-    }
-    //private variables
-	var raf,
-		perf,
+	if (w.YAFT !== undefined) {
+		return;
+	}
+	//private variables
+	var perf,
 		isInitialized = false,
 		perfExists = false,
 		showReport = false,
@@ -15,6 +14,7 @@
 		de = d.documentElement,
 		confs = {
 			useNormalizeCoverage: true,
+			canShowVisualReport: true,
 			maxWaitTime: 3000,
 			modules: [],
 			modulesExclude: []
@@ -29,6 +29,11 @@
 		visuallyComplete = 0,
 		modulesReport = {};
 
+	/**
+	 * Clones an object. Simplified recursive version
+	 * @param {object} obj
+	 * @returns {object}
+	 */
 	function cloneObject(obj) {
 		var clone = {},
 			i;
@@ -133,7 +138,11 @@
 	}
 
 
-	function getViewPort() {
+	/**
+     * Gets viewport object and helper functions for area calculation
+     * @returns {object}
+     */
+	function getViewPortObject() {
 		return {
 			win : w,
 			doc : d,
@@ -141,7 +150,7 @@
 			viewportWidth: (de.clientWidth < w.innerWidth ? w.innerWidth : de.clientWidth),
 			viewportHeight: (de.clientHeight < w.innerHeight ? w.innerHeight : de.clientHeight),
 			getScrollXY: function() {
-				//TODO: use raf to reduce layout
+				//TODO: use requestAnimationFrame to reduce layout trashing
 				return {
 					x: w.scrollX || w.pageXOffset,
 					y: w.scrollY || w.pageYOffset
@@ -150,12 +159,15 @@
 			getViewportArea : function() {
 				return this.viewportWidth * this.viewportHeight;
 			},
-			getElementBounds : function(e) {
+			getElementBounds : function(e, notID) {
 				var scrollxy,
 					elem,
 					bounding;
-				
-				elem = d.getElementById(e);
+				if (notID) {
+					elem = e;
+				} else {
+					elem = d.getElementById(e);
+				}
 				scrollxy = this.getScrollXY();
 
 				//Why did I have to clone it!!!
@@ -167,8 +179,8 @@
 				bounding.right = bounding.right + scrollxy.x;
 				return bounding;
 			},
-			isInViewport : function(e) {
-				var bounds = this.getElementBounds(e);
+			isInViewport : function(e, notID) {
+				var bounds = this.getElementBounds(e, notID);
 				//adding bounds.bottom and bounds.right limit
 				return (bounds.top < this.viewportHeight && bounds.left < this.viewportWidth && bounds.bottom >= 0 && bounds.right >= 0);
 			},
@@ -215,89 +227,6 @@
 		};
 	}
 
-	//Draw reporting section starts
-	function drawData(modData) {
-		var el = d.createElement('div');
-
-		el.className = 'aft-data-containter';
-		el.innerHTML = '<div class="aft-data"><ul>'+
-								'<li>Module: ' + modData.name + '</li>'+
-								'<li>Load time: ' + Math.round(modData.loadTime) + ' ms</li>'+
-								'<li>Coverage: ' + Math.round(modData.coveragePercentage) + '%</li>'+
-								'<li>In viewport: ' + modData.inViewPort + '</li>'+
-							'</ul></div>';
-		return el;
-	}
-
-	function drawModuleReport(mod) {
-		var dataElem, 
-			thisBounds;
-
-		dataElem = drawData(mod);
-		thisBounds = viewport.getElementBounds(mod.name);
-		dataElem.style.top = '-' + thisBounds.height + 'px';
-		d.getElementById(mod.name).appendChild(dataElem);
-	}
-
-	function drawReportStyle() {
-		// ADD THE CSS STYLES REQUIRED
-		var style = d.createElement('style'),
-			css = '.aft-data-containter {' +
-						'text-align: left;' +
-						'position: relative;' +
-						'height: 0px;' +
-						'z-index: 9999;' +
-					'} \n ' +
-					'.aft-data {' +
-						'color: rgb(200, 200, 200); ' +
-						'color: rgba(255, 255, 255, .7); ' +
-						'background: rgb(100, 100, 100); ' +
-						'background: rgba(000, 000, 000, .5); ' +
-						'display: inline-block;' +
-						'font-size: 12px;' +
-						'font-weight: bolder;' +
-					'} \n ' +
-					'.aft-data ul {' +
-						'margin: 0;' +
-						'padding: 0 15px;' +
-					'} \n ';
-
-		style.setAttribute('type', 'text/css');
-		style.appendChild(d.createTextNode(css));
-		d.getElementsByTagName('head')[0].appendChild(style);
-	}
-
-	function drawReport(data) {
-		var el,
-			key,
-			mods;
-
-		drawReportStyle();
-
-		el = d.createElement('div');
-		el.className = 'aft-data-containter';
-		el.style.position = 'absolute';
-		el.style.top = '0px';
-		el.style.right = '0px';
-		el.innerHTML = '<div class="aft-data"><ul>'+
-								'<li>PLT: ' +  Math.floor(data.pageLoadTime) + '</li>'+
-								'<li>AFT: ' + Math.floor(data.aft) + '</li>'+
-								'<li>Visually Complete: ' + Math.floor(data.visuallyComplete) + '</li>'+
-								'<li>Start Render: ' +  Math.floor(data.startRender) + '</li>'+
-								'<li>Dom Interactive: ' +  Math.floor(data.domInteractive) + '</li>'+
-								'<li>Total Coverage: ' + Math.round(data.totalCoveragePercentage) +'%</li>'+
-								'<li>N Total Coverage: ' + Math.round(data.normTotalCoveragePercentage) +'%</li>'+
-							'</ul></div>';
-		d.body.appendChild(el);
-
-		for (key in modulesReport){
-			if (modulesReport.hasOwnProperty(key)) {
-				drawModuleReport(modulesReport[key]);
-			}
-		}
-	}
-	//Reporting section ends
-
 	function getAndSetModules(rules, exclusions) {
 		var modName = '',
 			i,
@@ -312,7 +241,7 @@
 
 		for (i = 0; i < len; i+=1) {
 			rule = rules[i];
-			elems = d.querySelectorAll('div[id^="' + rule + '"],section[id^="' + rule + '"]');
+			elems = d.querySelectorAll('div[id^="' + rule + '"],section[id^="' + rule + '"], ul[id^="' + rule + '"]');
 			elemsLen = elems.length;
 			for (j = elemsLen - 1; j >= 0; j--) {
 				modName = elems[j].id;
@@ -366,7 +295,7 @@
 			resource,
 			modStart = YAFT.getStartRenderTime(), //How about YAFT.getDomInteractive
 			modEnd = YAFT.getStartRenderTime(), //How about YAFT.getDomInteractive
-			childElements = mod.querySelectorAll('div, img, a, video, span'),
+			childElements = mod.querySelectorAll('div, img, a, video, span, ul'),
 			len = childElements.length;
 
 		if (!customReport) {
@@ -386,7 +315,7 @@
 
 					if (resourceUrl) {
 						resource = perf.getEntriesByName(resourceUrl);
-						if (resource && resource.length && resource.length > 0) {
+						if (resource && resource.length && resource.length > 0 && viewport.isInViewport(elem, true)) {
 							resources.push(createEntryFromResourceTiming(resource[0]));
 						}
 					}
@@ -459,7 +388,7 @@
 		}
 		return 0;
 	}
-	function getAFT() {
+	function getAFT(modsReport) {
 		var aboveFoldTime = 0, //aka Speedindex
 			rnow = perf.now(), //right now
 			aftIntervalCount = Math.floor(rnow / 100), // 100ms per interval. Should be max 500. Dont kill the memory
@@ -473,16 +402,16 @@
 				aftIntervals[i] = 0;
 			}
 			i = 0;
-			for (key in modulesReport){
-				if (modulesReport.hasOwnProperty(key) && modulesReport[key].inViewPort && Math.round(modulesReport[key].coveragePercentage) > 0) {
+			for (key in modsReport){
+				if (modsReport.hasOwnProperty(key) && modsReport[key].inViewPort && Math.round(modsReport[key].coveragePercentage) > 0) {
 					if (confs.useNormalizeCoverage) {
-						modulesReport[key].normCoveragePercentage =  (modulesReport[key].coveragePercentage / totalCoveragePercentage) * 100;
-						normTotCovPerc += modulesReport[key].normCoveragePercentage;
+						modsReport[key].normCoveragePercentage =  (modsReport[key].coveragePercentage / totalCoveragePercentage) * 100;
+						normTotCovPerc += modsReport[key].normCoveragePercentage;
 					}
 
-					if (modulesReport[key].loadTime > 0) {
-						i = Math.round(modulesReport[key].loadTime / 100);
-						aftIntervals[i] += confs.useNormalizeCoverage ? modulesReport[key].normCoveragePercentage: modulesReport[key].coveragePercentage; 
+					if (modsReport[key].loadTime > 0) {
+						i = Math.round(modsReport[key].loadTime / 100);
+						aftIntervals[i] += confs.useNormalizeCoverage ? modsReport[key].normCoveragePercentage: modsReport[key].coveragePercentage; 
 					}
 				}
 			}
@@ -509,6 +438,33 @@
 		});
 		return timingsArray;
 	}
+	function getHttpRequestsReport(reqs){
+		var httpReqReport = {},
+			i = 0,
+			cached = 0,
+			plt = YAFT.getPageLoadTime(),
+			onloadCount = 0,
+			onloadCached = 0;
+		httpReqReport.count = reqs.length;
+		for (i = 0; i < httpReqReport.count; i += 1) {
+			if (reqs[i].start <= plt) {
+				onloadCount += 1;
+			}
+			if (reqs[i].duration <= 0) {
+				cached += 1;
+				if (reqs[i].start <= plt) {
+					onloadCached += 1;
+				}
+			}
+		}
+		httpReqReport.cached = cached;
+		httpReqReport.nonCached = httpReqReport.count - cached;
+		httpReqReport.onloadCount = onloadCount;
+		httpReqReport.onloadCached = onloadCached;
+		httpReqReport.onloadNonCached = onloadCount - onloadCached;
+
+		return httpReqReport;
+	}
 	function finalResult(evnt, callback) {
 		var data = {},
 			aftData = {},
@@ -516,7 +472,9 @@
 			startRender = YAFT.getStartRenderTime(),
 			domElementsCount = YAFT.getDomElementsCount(),
 			ttfb = YAFT.getTTFB(),
-			domInteractive = YAFT.getDomInteractive();
+			domInteractive = YAFT.getDomInteractive(),
+			modsReport = {},
+			httpRequests = {};
 
 		timings = getTimings();
 		if (!(timings && timings.length && timings.length > 0)) {
@@ -527,7 +485,7 @@
 		//1. Calculate AFT
 		//1.2 get viewport
 		if (!viewport) {
-			viewport = getViewPort();
+			viewport = getViewPortObject();
 		}
 		
 		//1.3 get all modules and set to modules variable
@@ -536,21 +494,25 @@
 		//1.4 prepare module report which sets to modulesReport variable
 		prepareModulesReport(modules);
 
+		// I could have just used just modulesReport variable but I needed this to make unit test working
+		modsReport = YAFT.getFinalModulesReport();
+
 		//1.5 get total coverage
-		totalCoveragePercentage = getTotalCoverage(modulesReport);
+		totalCoveragePercentage = getTotalCoverage(modsReport);
 
 		//1.5 finanlly calculate AFT
-		aftData = getAFT(modulesReport);
+		aftData = getAFT(modsReport);
 		normTotalCoveragePercentage = aftData.normTotalCoveragePercentage;
 
 		//2. Get costly resources
 		costlyResources = getCostlyResources();
 
+		//3. Get httpRequests
+		httpRequests = getHttpRequestsReport(costlyResources);
 
-		//3. Calculate Visually Complete
+		//4. Calculate Visually Complete
 		visuallyComplete = getVisuallyComplete(aftData.aftIntervals);
 
-		//4. Get bandwidth and connection speed
 		
 		data = {
 			aft: aftData.aft,
@@ -559,30 +521,30 @@
 			domInteractive: domInteractive,
 			ttfb: ttfb,
 			event: evnt,
-			modulesReport: modulesReport,
+			modulesReport: modsReport,
 			totalCoveragePercentage: totalCoveragePercentage,
 			normTotalCoveragePercentage: normTotalCoveragePercentage,
 			domElementsCount: domElementsCount,
-			//resources: timings,
+			resources: timings,
 			costlyResources: costlyResources,
+			httpRequests: httpRequests,
 			visuallyComplete: visuallyComplete
 		};
-
-		if (showReport === true) {
-			drawReport(data);
-		}
 
 		//finally call callback
 		if (callback) {
 			YAFT.logToConsole(data);
 			YAFT.logToConsole(aftData.aftIntervals);
-
 			callback(data);
+		}
+
+		if (showReport === true && confs.canShowVisualReport && w.YAFT_REPORT && w.YAFT_REPORT.drawReport) {
+			w.YAFT_REPORT.drawReport(data);
 		}
 	}
 
 	function triggerPerf(evnt, callback) {
-		if (isLoadFired) {
+		if (isLoadFired || !isInitialized) {
 			return;
 		}
 		isLoadFired = true;
@@ -605,8 +567,13 @@
 	}
 
 	w.YAFT = {
-		//required for unit testing
+		/**
+		 * triggers YAFT's final perf metric calculations. If you want to use this function, run YAFT.init first.
+		 * @param {string} evnt event name. callback
+		 * @param {function} callback callback function which will get the YAFT final result in the second param
+		 */	
 		triggerPerf: triggerPerf,
+
 		triggerCustomTiming: function(mod, startTime, endTime) {
 			//check isInitialized first
 			if (!perfExists) {
@@ -618,7 +585,7 @@
 			if (YAFT.isInitialized()){
 				//get viewport early
 				if (!viewport) {
-					viewport = getViewPort();
+					viewport = getViewPortObject();
 				}
 		
 				//add to modules and modulesReport
@@ -637,28 +604,60 @@
 				}
 			}
 		},
+		
+		/**
+		 * Gets final modules report
+		 * @returns {object} modules report
+		 */	
+		getFinalModulesReport: function () {
+			return modulesReport;
+		},
+
+		/**
+		 * resets YAFT private variables.
+		 */	
 		reset: function() {
 			isInitialized = true;
 			isLoadFired =false; // TODO: remove event handler
 			modules = [];
 		},
+
+		/**
+		 * Checks if Navigation and Resource Timing APIs exist or not
+		 * @returns {bool}
+		 */	
 		perfExists: function() {
 			return perfExists;
 		},
 
+		/**
+		 * Checks if YAFT.init function is already called or not. Use YAFT.reset() first to reinit the YAFT
+		 * @returns {bool}
+		 */	
 		isInitialized: function() {
 			return isInitialized;
 		},
 
+		/**
+		 * Gets config object which will be used for YAFT configuration
+		 * @returns {object}
+		 */	
 		getConfig: function() {
 			return confs;
 		},
 		
+		/**
+		 * Gets window.performance object if it exists
+		 * @returns {object}
+		 */	
 		getPerformance: function() {
 			return w.performance || w.webkitPerformance || w.msPerformance || w.mozPerformance || w.Performance;
 		},
 
-		
+		/**
+		 * Gets window.requestAnimationFrame object if it exists. 
+		 * @returns {object}
+		 */	
 		getRequestAnimationFrame: function() {
 			return w.requestAnimationFrame || w.webkitRequestAnimationFrame || w.mozRequestAnimationFrame || w.msRequestAnimationFrame || function(cb) { return w.setTimeout(cb, 1000 / 60); };
 		},
@@ -666,10 +665,9 @@
 		init: function(configs, callback) {
 			var key;
 			//reset everthing first
-			YAFT.reset();
+			this.reset();
 
 			perf = this.getPerformance();
-			raf = this.getRequestAnimationFrame();
 
 			if (perf && perf.timing && (perf.getEntriesByType !== undefined || perf.webkitGetEntriesByType !== undefined)) {
 				startTime = perf.timing.navigationStart;
@@ -694,27 +692,31 @@
 				}
 			}
 
-			if (w.addEventListener) {
-				//fire page load perf beacons on window load event
-				w.addEventListener('load', function() {
-					YAFT.triggerPerf('load', callback);
-				}, false);
-				//for fallback if onload already fired
-				w.addEventListener('unload', function() {
-					YAFT.triggerPerf('unload', callback);
-				}, false);
+			if (perf.timing.loadEventStart > perf.timing.navigationStart){
+				//if onlaod is already fired, trigger aft calculation
+				YAFT.triggerPerf('deferred', callback);
+			} else {
+				if (w.addEventListener) {
+					//fire page load perf beacons on window load event
+					w.addEventListener('load', function() {
+						YAFT.triggerPerf('load', callback);
+					}, false);
+					//for fallback if onload already fired
+					w.addEventListener('unload', function() {
+						YAFT.triggerPerf('unload', callback);
+					}, false);
 
-			} else if (w.attachEvent) {	
-				//you may not need this since load event might be fireed yet. Check perf.onloadend
-				w.attachEvent('onload', function() {
-					YAFT.triggerPerf('load', callback);
-				});
+				} else if (w.attachEvent) {	
+					//you may not need this since load event might be fireed yet. Check perf.onloadend
+					w.attachEvent('onload', function() {
+						YAFT.triggerPerf('load', callback);
+					});
 
-				w.attachEvent('onunload', function() {
-					YAFT.triggerPerf('unload', callback);
-				});
+					w.attachEvent('onunload', function() {
+						YAFT.triggerPerf('unload', callback);
+					});
+				}
 			}
-			
 		},
 		getDomElementsCount: function(){
 			//it is exactly what WPT does but this shows a lot more. Why?
@@ -748,6 +750,9 @@
 				result[keyValuePair[0]] = keyValuePair[1] || '';
 			}
 			return result;
+		},
+		getViewport: function() {
+			return viewport;
 		},
 		//log to console
 		logToConsole: function(obj) {
