@@ -9,6 +9,15 @@ exports.delay = function(req, res){
 		res.end(' Delayed ' + addlatency + ' ms');
 	},addlatency);
 };
+
+exports.delay2 = function(req, res){
+	var addlatency = req.param('addlatency') || 1000;
+	//res.write('Hello\n');
+	setInterval(function() {
+		res.end(' Delayed ' + addlatency + ' ms' + '<img src"http://fastsite.herokuapp.com/delayasset/5000/img6.jpeg">');
+	},addlatency);
+};
+
 exports.delayedAsstes = function(req, res){
 	var fs = require('fs'),
 		asset,

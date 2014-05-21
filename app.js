@@ -27,6 +27,7 @@ if ('development' == app.get('env')) {
 }
 
 app.get('/delay', routes.delay);
+app.get('/delay2', routes.delay2);
 app.get('/delayasset/:delay/:asset', routes.delayedAsstes);
 app.get('/hello', routes.hello);
 
