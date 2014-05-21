@@ -54,22 +54,31 @@
 	function getTimings() {
 		var entries = [],
 			n,
+			i,
+			iframes,
 			resources = []; // Other entries come from Resource Timing API
 	
 		// Page times come from Navigation Timing API
 		entries.push(createEntryFromNavigationTiming());
 		
-		if(perf.getEntriesByType !== undefined) {
-			resources = perf.getEntriesByType('resource');
-		}
-		else if(perf.webkitGetEntriesByType !== undefined) {
-			resources = perf.webkitGetEntriesByType('resource');
-		}
-		// Do it by name???
-		for(n = 0; n < resources.length; n++) {
+		resources = perf.getEntriesByType('resource');
+
+		for(n = 0; n < resources.length; n += 1) {
 			entries.push(createEntryFromResourceTiming(resources[n]));
 		}
-
+		iframes = document.getElementsByTagName('iframe');
+		if (iframes && iframes.length) {
+			for (i = 0; i < iframes.length; i += 1) {
+				try {
+					resources = iframes[i].contentWindow.performance.getEntriesByType('resource');
+					for(n = 0; n < resources.length; n += 1) {
+						entries.push(createEntryFromResourceTiming(resources[n]));
+					}
+				} catch (e){
+					//most probably security origin issue.
+				}
+			}
+		}
 		return entries;
 	}
 
