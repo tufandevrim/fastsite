@@ -15,7 +15,7 @@ exports.delay2 = function(req, res){
 	 res.setHeader('Content-Type', 'text/html');
 	//res.write('Hello\n');
 	setInterval(function() {
-		res.end(' Delayed ' + addlatency + ' ms' + ' <img src"http://fastsite.herokuapp.com/delayasset/5000/img6.jpeg">');
+		res.end('<html><head></head><body> Delayed ' + addlatency + ' ms' + ' <img src"http://fastsite.herokuapp.com/delayasset/2000/img6.jpeg"></body></html>');
 	},addlatency);
 };
 
