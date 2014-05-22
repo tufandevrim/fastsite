@@ -75,7 +75,7 @@
 					resources = iframes[i].contentWindow.performance.getEntriesByType('resource');
 					parentDelta = iframes[i].contentWindow.performance.timing.navigationStart - perf.timing.navigationStart;
 					for(n = 0; n < resources.length; n += 1) {
-						entries.push(createEntryFromResourceTiming(resources[n]), parentDelta);
+						entries.push(createEntryFromResourceTiming(resources[n], parentDelta));
 					}
 				} catch (e){
 					//most probably security origin issue.
