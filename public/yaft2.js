@@ -100,28 +100,27 @@
 		// AppCache: start = fetchStart, end = domainLookupStart, connectStart or requestStart
 		// TCP: start = connectStart, end = secureConnectionStart or connectEnd
 		// SSL: secureConnectionStart can be undefined
-		var rStartTime = resource.startTime;
-		if (parentDelta && parentDelta > 0) {
-			rStartTime += parentDelta;
+		if (!(parentDelta && parentDelta > 0)) {
+			parentDelta = 0;
 		}
 		return {
 			url: resource.name,
-			start: rStartTime,
+			start: resource.startTime + parentDelta,
 			duration: resource.duration,
-			durationFromNStart: (resource.duration > 0) ? (resource.duration + rStartTime) : rStartTime,
-			redirectStart: resource.redirectStart,
+			durationFromNStart: (resource.duration > 0) ? (resource.duration + resource.startTime + parentDelta) : resource.startTime + parentDelta,
+			redirectStart: resource.redirectStart + parentDelta,
 			redirectDuration: resource.redirectEnd - resource.redirectStart,
 			appCacheStart: 0, // TODO
 			appCacheDuration: 0, // TODO
-			dnsStart: resource.domainLookupStart,
+			dnsStart: resource.domainLookupStart + parentDelta,
 			dnsDuration: resource.domainLookupEnd - resource.domainLookupStart,
-			tcpStart: resource.connectStart,
+			tcpStart: resource.connectStart + parentDelta,
 			tcpDuration: resource.connectEnd - resource.connectStart, // TODO
 			sslStart: 0, // TODO
 			sslDuration: 0, // TODO
-			requestStart: resource.requestStart,
+			requestStart: resource.requestStart + parentDelta,
 			requestDuration: resource.responseStart - resource.requestStart,
-			responseStart: resource.responseStart,
+			responseStart: resource.responseStart + parentDelta,
 			// ??? - Chromium returns zero for responseEnd for 3rd party URLs, bug?
 			responseDuration: resource.responseStart === 0 ? 0 : resource.responseEnd - resource.responseStart
 		};
