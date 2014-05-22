@@ -100,14 +100,15 @@
 		// AppCache: start = fetchStart, end = domainLookupStart, connectStart or requestStart
 		// TCP: start = connectStart, end = secureConnectionStart or connectEnd
 		// SSL: secureConnectionStart can be undefined
+		var rStartTime = resource.startTime;
 		if (parentDelta && parentDelta > 0) {
-			resource.startTime += parentDelta;
+			rStartTime += parentDelta;
 		}
 		return {
 			url: resource.name,
-			start: resource.startTime,
+			start: rStartTime,
 			duration: resource.duration,
-			durationFromNStart: (resource.duration > 0) ? (resource.duration + resource.startTime) : resource.startTime,
+			durationFromNStart: (resource.duration > 0) ? (resource.duration + rStartTime) : rStartTime,
 			redirectStart: resource.redirectStart,
 			redirectDuration: resource.redirectEnd - resource.redirectStart,
 			appCacheStart: 0, // TODO
