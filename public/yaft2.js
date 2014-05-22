@@ -66,6 +66,7 @@
 		for(n = 0; n < resources.length; n += 1) {
 			entries.push(createEntryFromResourceTiming(resources[n]));
 		}
+		//TODO: iframes have their own resource timings. Normilize to parents navigation start
 		iframes = document.getElementsByTagName('iframe');
 		if (iframes && iframes.length) {
 			for (i = 0; i < iframes.length; i += 1) {
@@ -78,7 +79,11 @@
 					//most probably security origin issue.
 				}
 			}
+			entries.sort(function(a, b) {
+				return a.start - b.start;
+			});
 		}
+
 		return entries;
 	}
 
