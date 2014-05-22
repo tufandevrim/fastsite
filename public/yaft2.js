@@ -73,7 +73,7 @@
 			for (i = 0; i < iframes.length; i += 1) {
 				try {
 					resources = iframes[i].contentWindow.performance.getEntriesByType('resource');
-					parentDelta = iframes[i].contentWindow.performance.navigationStart - perf.timing.navigationStart;
+					parentDelta = iframes[i].contentWindow.performance.timing.navigationStart - perf.timing.navigationStart;
 					for(n = 0; n < resources.length; n += 1) {
 						entries.push(createEntryFromResourceTiming(resources[n]), parentDelta);
 					}
