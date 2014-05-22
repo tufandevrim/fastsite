@@ -30,7 +30,7 @@
 			barOffset = 200;
 
 		for(n = 0; n < entries.length; n++) {
-			maxTime = Math.max(maxTime, entries[n].start + entries[n].duration);
+			maxTime = Math.max(maxTime, entries[n].durationFromNStart);
 		}
 
 		var container = document.getElementById(containerID),
@@ -55,8 +55,16 @@
 
 		//width can be configurable (maxWidth) 
 		//maxTime comes from resource timing api
-		var intervalTimeFrame = 1000, //1000ms and can be configurable 100, 200, 500, 1000, 2000
-			intervalWidth = (intervalTimeFrame * (width - 5 - barOffset)) / maxTime, //interval
+		var intervalTimeFrame = 1000; //1000ms and can be configurable 100, 200, 500, 1000, 2000
+		if (maxTime <= 500) {
+			intervalTimeFrame = 100;
+		} else if (maxTime > 500 && maxTime <= 2000) {
+			intervalTimeFrame = 200;
+		} else if (maxTime > 16000) {
+			intervalTimeFrame = 2000;
+		}
+
+		var	intervalWidth = (intervalTimeFrame * (width - 5 - barOffset)) / maxTime, //interval
 			scaleFactor = intervalTimeFrame / intervalWidth,
 			numberOfLines = maxTime / intervalTimeFrame,
 			x1 = barOffset,
@@ -105,8 +113,12 @@
 
 		var bar = createSVGGroup('translate(' + barOffset + ', 0)');
 
-		bar.appendChild(createSVGRect(entry.start / scaleFactor, 0, entry.duration / scaleFactor, rowHeight, 'fill:' + barColors.blocked));
-
+		if(entry.duration > 0) {
+			bar.appendChild(createSVGRect(entry.start / scaleFactor, 0, entry.duration / scaleFactor, rowHeight, 'fill:' + barColors.blocked));
+		} else {
+			//cache
+			bar.appendChild(createSVGRect(entry.start / scaleFactor, 0, 2, rowHeight, 'fill:' + barColors.blocked));
+		}
 		// TODO: Test for 3rd party and colour appropriately
 
 		if(entry.redirectDuration > 0) {
@@ -153,7 +165,7 @@
 		var strippedURL = url.match('[^?#]*');
 		var shorterURL = strippedURL[0];
 		if(shorterURL.length > 40) {
-			shorterURL = shorterURL.slice(0, 20) + ' ... ' + shorterURL.slice(-20);
+			shorterURL = shorterURL.slice(0, 17) + ' ... ' + shorterURL.slice(-20);
 		}
 
 		return shorterURL;
