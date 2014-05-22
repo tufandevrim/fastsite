@@ -56,6 +56,7 @@
 			n,
 			i,
 			iframes,
+			parentDelta = 0,
 			resources = []; // Other entries come from Resource Timing API
 	
 		// Page times come from Navigation Timing API
@@ -72,8 +73,9 @@
 			for (i = 0; i < iframes.length; i += 1) {
 				try {
 					resources = iframes[i].contentWindow.performance.getEntriesByType('resource');
+					parentDelta = iframes[i].contentWindow.performance.navigationStart - perf.timing.navigationStart;
 					for(n = 0; n < resources.length; n += 1) {
-						entries.push(createEntryFromResourceTiming(resources[n]));
+						entries.push(createEntryFromResourceTiming(resources[n]), parentDelta);
 					}
 				} catch (e){
 					//most probably security origin issue.
@@ -92,12 +94,15 @@
      * @param {object} resource
      * @returns {object}
 	 */
-	function createEntryFromResourceTiming(resource) {
+	function createEntryFromResourceTiming(resource, parentDelta) {
 		// TODO: Add fetchStart and duration, fix TCP, SSL timings
 		// NB
 		// AppCache: start = fetchStart, end = domainLookupStart, connectStart or requestStart
 		// TCP: start = connectStart, end = secureConnectionStart or connectEnd
 		// SSL: secureConnectionStart can be undefined
+		if (parentDelta && parentDelta > 0) {
+			resource.startTime += parentDelta;
+		}
 		return {
 			url: resource.name,
 			start: resource.startTime,
