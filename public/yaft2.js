@@ -112,10 +112,10 @@
 		for(n = 0; n < entries.length; n += 1) {
 			entry = entries[n];
 			dt = new Date(Math.round(navStart + entry.start));
-			tdns = entry.dnsDuration;
-			tconnect = entry.tcpDuration;
-			tsend = entry.responseStart - entry.requestStart;
-			treceive = entry.responseDuration;
+			tdns = Math.round(entry.dnsDuration);
+			tconnect = Math.round(entry.tcpDuration);
+			tsend = Math.round(entry.responseStart - entry.requestStart);
+			treceive = Math.round(entry.responseDuration);
 			twait = Math.round(entry.duration) - tdns - tconnect - tsend - treceive;
 			ttime = Math.round(entry.duration);
 			if (twait < 0) {
