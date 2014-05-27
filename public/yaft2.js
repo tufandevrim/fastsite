@@ -47,6 +47,128 @@
 		return clone;
 	}
 
+	function getHAR(entries) {
+		var ua = navigator.userAgent,
+			ver = navigator.appVersion,
+			entry,
+			ntiming= perf.timing,
+			navStart = ntiming.navigationStart,
+			dt, sdt = new Date(navStart),
+			url, t, adhoc, n,
+			httpStatus = '200', httpText = 'OK', fileSize = -1,
+			tdns = 0,
+			tconnect = 0,
+			tsend = 0,
+			treceive = 0,
+			twait = 0,
+			ttime = 0,
+			nextStart = 0;
+
+		// this is an empty HAR 1.2 object, for the complete structure see http://www.softwareishard.com/blog/har-12-spec/
+		adhoc = {
+			log: {
+				version: '1.2',
+				creator : {
+					name : 'YAFT', version : '0.1.0'
+				},
+				browser : {
+					name: ua, version: ver
+				},
+				pages : [{
+					startedDateTime: sdt.toISOString(),
+					id: 'Page_1',
+					title: d.location.href,
+					pageTimings: {
+						onContentLoad: ntiming.domInteractive - navStart,
+						onLoad: ntiming.loadEventEnd - navStart
+					}
+				}],
+				entries : [],
+				comment : ''
+			}
+		};
+/*
+			url: resource.name,
+			start: resource.startTime + parentDelta,
+			duration: resource.duration,
+			durationFromNStart: (resource.duration > 0) ? (resource.duration + resource.startTime + parentDelta) : resource.startTime + parentDelta,
+			redirectStart: resource.redirectStart + parentDelta,
+			redirectDuration: resource.redirectEnd - resource.redirectStart,
+			appCacheStart: 0, // TODO
+			appCacheDuration: 0, // TODO
+			dnsStart: resource.domainLookupStart + parentDelta,
+			dnsDuration: resource.domainLookupEnd - resource.domainLookupStart,
+			tcpStart: resource.connectStart + parentDelta,
+			tcpDuration: resource.connectEnd - resource.connectStart, // TODO
+			sslStart: 0, // TODO
+			sslDuration: 0, // TODO
+			requestStart: resource.requestStart + parentDelta,
+			requestDuration: resource.responseStart - resource.requestStart,
+			responseStart: resource.responseStart + parentDelta,
+			// ??? - Chromium returns zero for responseEnd for 3rd party URLs, bug?
+			responseDuration: resource.responseStart === 0 ? 0 : resource.responseEnd - resource.responseStart
+
+*/
+		for(n = 0; n < entries.length; n += 1) {
+			entry = entries[n];
+			dt = new Date(Math.round(navStart + entry.start));
+			tdns = entry.dnsDuration;
+			tconnect = entry.tcpDuration;
+			tsend = entry.responseStart - entry.requestStart;
+			treceive = entry.responseDuration;
+			twait = Math.round(entry.duration) - tdns - tconnect - tsend - treceive;
+			ttime = Math.round(entry.duration);
+			if (twait < 0) {
+				// if the rounding made twait below zero we need to fix the total time to match the sum because no timings can be below zero
+				ttime = ttime - twait;
+				twait = 0;
+			}
+			t = {
+				pageref: 'Page_1',
+				startedDateTime: dt.toISOString(),
+				time: ttime,
+				request: {
+					method: 'GET',
+					url: url,
+					httpVersion: 'HTTP/1.1',
+					cookies: [],
+					headers: [],
+					queryString: [],
+					headersSize: -1,
+					bodySize: -1
+				},
+				response: {
+					status: httpStatus,
+					statusText: httpText,
+					httpVersion: 'HTTP/1.0',
+					cookies: [],
+					headers: [],
+					content: {
+						size: fileSize,
+						compression: 0,
+						mimeType: '',
+					},
+					redirectURL: '',
+					headersSize: -1,
+					bodySize: fileSize
+				},
+				cache: {},
+				timings: {
+					blocked: -1,
+					dns: tdns,
+					connect: tconnect,
+					send: tsend,
+					wait: twait,
+					receive: treceive
+				}
+			};
+			//drawBar(entry, barOffset, rowHeight, scaleFactor);
+			console.log(JSON.stringify(t) + '\n' );
+			adhoc.log.entries.push(t);
+		}
+		return adhoc;
+
+	}
 	/**
 	 * Creates array of timing entries from Navigation and Resource Timing Interfaces
 	 * @returns {object[]}
@@ -493,6 +615,7 @@
 			ttfb = YAFT.getTTFB(),
 			domInteractive = YAFT.getDomInteractive(),
 			modsReport = {},
+			har = {},
 			httpRequests = {};
 
 		timings = getTimings();
@@ -532,7 +655,8 @@
 		//4. Calculate Visually Complete
 		visuallyComplete = getVisuallyComplete(aftData.aftIntervals);
 
-		
+		har = getHAR(timings);
+
 		data = {
 			aft: aftData.aft,
 			pageLoadTime: pageLoadTime,
@@ -545,6 +669,7 @@
 			normTotalCoveragePercentage: normTotalCoveragePercentage,
 			domElementsCount: domElementsCount,
 			resources: timings,
+			har: har,
 			costlyResources: costlyResources,
 			httpRequests: httpRequests,
 			visuallyComplete: visuallyComplete
