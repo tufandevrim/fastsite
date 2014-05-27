@@ -166,6 +166,7 @@
 			console.log(JSON.stringify(t) + '\n' );
 			adhoc.log.entries.push(t);
 		}
+		console.log(JSON.stringify(adhoc) + '\n' );
 		return adhoc;
 
 	}
