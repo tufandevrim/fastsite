@@ -129,7 +129,7 @@
 				time: ttime,
 				request: {
 					method: 'GET',
-					url: url,
+					url: entry.url,
 					httpVersion: 'HTTP/1.1',
 					cookies: [],
 					headers: [],
