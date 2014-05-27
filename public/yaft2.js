@@ -15,6 +15,7 @@
 		confs = {
 			useNormalizeCoverage: true,
 			canShowVisualReport: true,
+			generateHAR: false,
 			maxWaitTime: 3000,
 			modules: [],
 			modulesExclude: []
@@ -163,7 +164,7 @@
 				}
 			};
 			//drawBar(entry, barOffset, rowHeight, scaleFactor);
-			console.log(JSON.stringify(t) + '\n' );
+			//console.log(JSON.stringify(t) + '\n' );
 			adhoc.log.entries.push(t);
 		}
 		console.log(JSON.stringify(adhoc) + '\n' );
@@ -656,7 +657,9 @@
 		//4. Calculate Visually Complete
 		visuallyComplete = getVisuallyComplete(aftData.aftIntervals);
 
-		har = getHAR(timings);
+		if (confs.generateHAR) {
+			har = getHAR(timings);
+		}
 
 		data = {
 			aft: aftData.aft,
