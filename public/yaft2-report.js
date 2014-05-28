@@ -56,7 +56,9 @@
 		//width can be configurable (maxWidth) 
 		//maxTime comes from resource timing api
 		var intervalTimeFrame = 1000; //1000ms and can be configurable 100, 200, 500, 1000, 2000
-		if (maxTime <= 500) {
+		if (maxTime <= 200){
+			intervalTimeFrame = 20;
+		} else if (maxTime > 200 && maxTime <= 500) {
 			intervalTimeFrame = 100;
 		} else if (maxTime > 500 && maxTime <= 2000) {
 			intervalTimeFrame = 200;
@@ -94,7 +96,7 @@
 			//console.log(JSON.stringify(entry) + "\n" );
 		}
 
-		svg.appendChild(createSVGText(width-1, 0, 0, rowHeight, 'font: 12px sans-serif;', 'end', 'hide', closescript));
+		svg.appendChild(createSVGText(2, 0, 0, rowHeight, 'font: 12px sans-serif;', 'start', 'hide', closescript));
 
 		container.appendChild(svg);
 	}
@@ -161,13 +163,10 @@
      * TODO: Remove protocol
      */
 	function shortenURL(url) {
-		// Strip off any query string and fragment
-		var strippedURL = url.match('[^?#]*');
-		var shorterURL = strippedURL[0];
-		if(shorterURL.length > 40) {
-			shorterURL = shorterURL.slice(0, 17) + ' ... ' + shorterURL.slice(-20);
+		var shorterURL = url;
+		if(url.length > 40) {
+			shorterURL = url.slice(0, 17) + ' ... ' + url.slice(-20);
 		}
-
 		return shorterURL;
 	}
 
@@ -345,6 +344,7 @@
 
 	function drawReport(data) {
 		var el,
+			wf,
 			key,
 			mods;
 		if (w.YAFT === undefined && data === undefined) {
@@ -369,7 +369,10 @@
 								'<li>Dom Interactive: ' +  Math.floor(data.domInteractive) + '</li>'+
 								'<li>Total Coverage: ' + Math.round(data.totalCoveragePercentage) +'%</li>'+
 								'<li>N Total Coverage: ' + Math.round(data.normTotalCoveragePercentage) +'%</li>'+
-							'</ul><a id="aft-report-close" style="position:absolute;top:0px;right:0px;color:white;border:1px solid white;" onclick="YAFT_REPORT.closeReport();" href="#">X</a></div>';
+							'</ul>' +
+							'<a id="aft-report-waterfall" style="position:absolute;top:0px;right:15px;color:white;border:1px solid white;" href="#">WF</a>' +
+							'<a id="aft-report-close" style="position:absolute;top:0px;right:0px;color:white;border:1px solid white;" onclick="YAFT_REPORT.closeReport();" href="#">X</a>' +
+						'</div>';
 		d.body.appendChild(el);
 
 		for (key in data.modulesReport){
@@ -378,7 +381,10 @@
 			}
 		}
 
-		drawWaterfall(data.resources);
+		wf = d.getElementById('aft-report-waterfall');
+		wf.onclick = function(){
+			drawWaterfall(data.resources);
+		};
 	}
 	w.YAFT_REPORT = {
 		drawReport: drawReport,
