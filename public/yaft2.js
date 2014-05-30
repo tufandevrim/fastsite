@@ -189,7 +189,9 @@
 		resources = perf.getEntriesByType('resource');
 
 		for(n = 0; n < resources.length; n += 1) {
-			entries.push(createEntryFromResourceTiming(resources[n]));
+			if (resources[n].name !== 'document') {
+				entries.push(createEntryFromResourceTiming(resources[n]));
+			}
 		}
 		//TODO: iframes have their own resource timings. Normilize to parents navigation start
 		iframes = document.getElementsByTagName('iframe');
@@ -199,7 +201,9 @@
 					resources = iframes[i].contentWindow.performance.getEntriesByType('resource');
 					parentDelta = iframes[i].contentWindow.performance.timing.navigationStart - perf.timing.navigationStart;
 					for(n = 0; n < resources.length; n += 1) {
-						entries.push(createEntryFromResourceTiming(resources[n], parentDelta));
+						if (resources[n].name !== 'document') {
+							entries.push(createEntryFromResourceTiming(resources[n], parentDelta));
+						}
 					}
 				} catch (e){
 					//most probably security origin issue.
