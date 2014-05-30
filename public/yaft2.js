@@ -14,6 +14,7 @@
 		de = d.documentElement,
 		confs = {
 			useNormalizeCoverage: true,
+			useCustomSelector: false,
 			canShowVisualReport: true,
 			generateHAR: false,
 			maxWaitTime: 3000,
@@ -88,28 +89,7 @@
 				comment : ''
 			}
 		};
-/*
-			url: resource.name,
-			start: resource.startTime + parentDelta,
-			duration: resource.duration,
-			durationFromNStart: (resource.duration > 0) ? (resource.duration + resource.startTime + parentDelta) : resource.startTime + parentDelta,
-			redirectStart: resource.redirectStart + parentDelta,
-			redirectDuration: resource.redirectEnd - resource.redirectStart,
-			appCacheStart: 0, // TODO
-			appCacheDuration: 0, // TODO
-			dnsStart: resource.domainLookupStart + parentDelta,
-			dnsDuration: resource.domainLookupEnd - resource.domainLookupStart,
-			tcpStart: resource.connectStart + parentDelta,
-			tcpDuration: resource.connectEnd - resource.connectStart, // TODO
-			sslStart: 0, // TODO
-			sslDuration: 0, // TODO
-			requestStart: resource.requestStart + parentDelta,
-			requestDuration: resource.responseStart - resource.requestStart,
-			responseStart: resource.responseStart + parentDelta,
-			// ??? - Chromium returns zero for responseEnd for 3rd party URLs, bug?
-			responseDuration: resource.responseStart === 0 ? 0 : resource.responseEnd - resource.responseStart
 
-*/
 		for(n = 0; n < entries.length; n += 1) {
 			entry = entries[n];
 			dt = new Date(Math.round(navStart + entry.start));
@@ -163,7 +143,6 @@
 					receive: treceive
 				}
 			};
-			//drawBar(entry, barOffset, rowHeight, scaleFactor);
 			//console.log(JSON.stringify(t) + '\n' );
 			adhoc.log.entries.push(t);
 		}
@@ -185,7 +164,7 @@
 	
 		// Page times come from Navigation Timing API
 		entries.push(createEntryFromNavigationTiming());
-		
+
 		resources = perf.getEntriesByType('resource');
 
 		for(n = 0; n < resources.length; n += 1) {
@@ -388,7 +367,13 @@
 
 		for (i = 0; i < len; i+=1) {
 			rule = rules[i];
-			elems = d.querySelectorAll('div[id^="' + rule + '"],section[id^="' + rule + '"], ul[id^="' + rule + '"]');
+
+			if (confs.useCustomSelector) {
+				elems = d.querySelectorAll(rule);
+			} else {
+				elems = d.querySelectorAll('div[id^="' + rule + '"],section[id^="' + rule + '"], ul[id^="' + rule + '"]');
+			}
+
 			elemsLen = elems.length;
 			for (j = elemsLen - 1; j >= 0; j--) {
 				modName = elems[j].id;
@@ -741,7 +726,12 @@
 				}
 		
 				//add to modules and modulesReport
-				nList = d.querySelectorAll('div[id="' + mod + '"],section[id="' + mod + '"]');
+				if (this.getConfig().useCustomSelector) {
+					nList = d.querySelectorAll(mod);
+				} else {
+					nList = d.querySelectorAll('div[id^="' + mod + '"], section[id^="' + mod + '"], ul[id^="' + mod + '"]');
+				}
+
 				if (nList && nList.length>0) {
 					el = nList[0];
 
