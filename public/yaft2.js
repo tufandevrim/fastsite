@@ -186,7 +186,7 @@
 		// Page times come from Navigation Timing API
 		entries.push(createEntryFromNavigationTiming());
 		
-		resources = perf.getEntriesByType('resource');
+		resources = perf.getEntries();
 
 		for(n = 0; n < resources.length; n += 1) {
 			entries.push(createEntryFromResourceTiming(resources[n]));
@@ -196,7 +196,7 @@
 		if (iframes && iframes.length) {
 			for (i = 0; i < iframes.length; i += 1) {
 				try {
-					resources = iframes[i].contentWindow.performance.getEntriesByType('resource');
+					resources = iframes[i].contentWindow.performance.getEntries();
 					parentDelta = iframes[i].contentWindow.performance.timing.navigationStart - perf.timing.navigationStart;
 					for(n = 0; n < resources.length; n += 1) {
 						entries.push(createEntryFromResourceTiming(resources[n], parentDelta));
@@ -817,7 +817,7 @@
 
 			perf = this.getPerformance();
 
-			if (perf && perf.timing && (perf.getEntriesByType !== undefined || perf.webkitGetEntriesByType !== undefined)) {
+			if (perf && perf.timing && (perf.getEntries !== undefined || perf.webkitGetEntries !== undefined)) {
 				startTime = perf.timing.navigationStart;
 				perf.now = perf.now || perf.webkitNow || perf.msNow || perf.mozNow || function () { return new Date().getTime() - startTime; };
 				perfExists = true;
