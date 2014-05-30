@@ -879,7 +879,7 @@
 			return perfExists ? perf.timing.responseStart - startTime : 0;
 		},
 		getPageLoadTime: function(){
-			return perfExists ? perf.timing.loadEventEnd - startTime : 0;
+			return perfExists ? perf.timing.loadEventStart - startTime : 0;
 		},
 		getStartRenderTime: function() {
 			return perfExists ? perf.timing.domContentLoadedEventEnd - startTime : 0;
