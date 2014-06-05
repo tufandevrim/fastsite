@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Prime ssl tests</title>
+	<style>
+		body, img, div {
+			margin: 0;
+			padding: 0;
+		}
+		.title {
+			text-align: center;
+		}
+		.main_wrapper {
+			margin: 0 auto;
+			width: 900px;
+			height:700px;
+		}
+	</style>
+</head>
+<body>
+	<div class="main_wrapper">
+		<div class="title">
+			This test page shows how ssl, dns and connection priming happens from different page. <br/>
+			Go to <a href="https://mail.yahoo.com">Yahoo Mail</a>
+		</div>
+	</div>
+	<script>
+			var k, l, domain = 3, conn = 4, imgMain = new Image(), imgMain2 = new Image();
+
+			function primeDnsSslConn(i, j) {
+                var img = new Image();
+                img.src = 'https://s'+(i||'')+'.yimg.com/nn/lib/metro/p'+j+'.gif';
+            }
+            //destination
+            imgMain.src = 'https://mail.yahoo.com/favicon.ico';
+            imgMain2.src = 'https://us-mg6.mail.yahoo.com/favicon.ico';
+
+            for (k = 0; k < domain; k += 1) {
+	            for (l = 1; l <= conn; l += 1) {
+	            	primeDnsSslConn(k,l);
+	            }
+            }
+	</script>
+</body>
+</html>
