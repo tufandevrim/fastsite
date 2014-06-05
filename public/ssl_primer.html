@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Prime ssl tests</title>
+	<style>
+		body, img, div {
+			margin: 0;
+			padding: 0;
+		}
+		.title {
+			text-align: center;
+		}
+		.main_wrapper {
+			margin: 0 auto;
+			width: 900px;
+			height:700px;
+		}
+	</style>
+</head>
+<body>
+	<div class="main_wrapper">
+		<div class="title">
+			Test ssl prime <br/>
+			Go to <a href="https://www.yahoo.com">Yahoo</a>
+		</div>
+	</div>
+	<script>
+		window.addEventListener('load', function() {
+			var img = new Image();
+				img2 = new Image();
+			img.src = "https://s.yimg.com/rz/l/favicon.ico";
+			img2.src = "https://s1.yimg.com/rz/l/favicon.ico";
+
+			setTimeout(function(){
+				window.location = 'https://www.yahoo.com';
+			},5000);
+		}, false);
+	</script>
+</body>
+</html>
