@@ -1,0 +1,9 @@
+{>layout/}
+{<content}
+	<div>you will be redirected in 2 sec</div>
+	<script>
+		setTimeout(function(){
+			window.location = 'mailmain';
+		}, 2000)
+	</script>
+{/content}

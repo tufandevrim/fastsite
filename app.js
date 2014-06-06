@@ -53,6 +53,7 @@ app.get('/hello', routes.hello);
 
 app.get('/maillogin', routes.maillogin);
 app.get('/maillogin2', routes.maillogin2);
+app.post('/maillogin2', routes.maillogin2);
 app.get('/mailmain', routes.mailmain);
 app.get('/maillanding/neo/launch', routes.maillanding);
 

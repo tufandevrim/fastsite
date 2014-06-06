@@ -39,7 +39,9 @@ exports.hello = function(req, res){
 
 
 exports.maillogin = function(req, res){
-	res.redirect('/maillogin2');
+	res.render('maillogin', {
+		title: 'Mail Landing Page'
+	});
 };
 exports.maillogin2 = function(req, res){
 	res.redirect('/mailmain');
