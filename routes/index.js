@@ -33,6 +33,20 @@ exports.delayedAsstes = function(req, res){
 	},addlatency);
 };
 
+exports.cacheAsset = function(req, res){
+	var fs = require('fs'),
+		asset,
+		addsecond = req.param('second') || 1000,
+		assetName = req.param('asset');// || 'header.png';
+
+	asset = fs.readFileSync('./public/img/'+assetName);
+	res.setHeader('Cache-Control', 'max-age='+addsecond);
+	res.writeHead(200, {'Content-Type': 'image/png' });
+	res.end(asset, 'binary');
+	
+};
+
+
 exports.hello = function(req, res){
 	res.end('Hello world');
 };
