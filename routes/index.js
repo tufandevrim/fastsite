@@ -34,5 +34,21 @@ exports.delayedAsstes = function(req, res){
 };
 
 exports.hello = function(req, res){
-		res.end('Hello world');
+	res.end('Hello world');
+};
+
+
+exports.maillogin = function(req, res){
+	res.redirect('/maillogin2');
+};
+exports.maillogin2 = function(req, res){
+	res.redirect('/mailmain');
+};
+exports.mailmain = function(req, res){
+	res.redirect('/maillanding/neo/launch?.rand='+Math.floor((Math.random() * 100000) + 1));
+};
+exports.maillanding = function(req, res){
+	res.render('maillanding', {
+		title: 'Mail Landing Page'
+	});
 };
