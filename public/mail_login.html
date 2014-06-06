@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Mail 304 static data issue</title>
+	<style>
+		body, img, div {
+			margin: 0;
+			padding: 0;
+		}
+		.title {
+			text-align: center;
+		}
+		.main_wrapper {
+			margin: 0 auto;
+			width: 900px;
+			height:700px;
+		}
+	</style>
+</head>
+<body>
+	<div class="main_wrapper">
+		<div class="title">
+			Go to direcly<a href="mail_main.html">Mail Landing Page</a>
+		</div>
+	</div>
+	<script>
+		window.addEventListener('load', function() {
+			/*
+			var k, l, domain = 3, conn = 4, imgMain = new Image();
+			
+			function primeDnsSslConn(i, j) {
+                var img = new Image();
+                img.src = 'https://s'+(i||'')+'.yimg.com/nn/lib/metro/p'+j+'.gif';
+            }
+
+            //destination
+            imgMain.src = 'https://www.yahoo.com/favicon.ico';
+
+            for (k = 0; k < domain; k += 1) {
+	            for (l = 1; l <= conn; l += 1) {
+	            	primeDnsSslConn(k,l);
+	            }
+            }
+			*/
+			setTimeout(function(){
+				window.location = 'mail_main.html?rand='+Math.floor((Math.random() * 100000) + 1);
+			},2000);
+		}, false);
+	</script>
+</body>
+</html>
