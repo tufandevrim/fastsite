@@ -48,6 +48,7 @@ exports.mailmain = function(req, res){
 	res.redirect('/maillanding/neo/launch?.rand='+Math.floor((Math.random() * 100000) + 1));
 };
 exports.maillanding = function(req, res){
+	res.setHeader('Cache-Control', 'max-age=0');
 	res.render('maillanding', {
 		title: 'Mail Landing Page'
 	});
