@@ -1,6 +1,6 @@
 {>layout/}
 {<content}
-
+	<div>Types something dummy</div>
 	<form method="post" action="maillogin2?" name="login_form" id="login_form">
 		<div id="inputs">
 			<input name="login" id="username" type="text" maxlength="96" tabindex="1" aria-required="true" placeholder="Yahoo ID" autocorrect="off" value="">
@@ -8,9 +8,4 @@
 			<input type="submit">
 		</div>
 	</form>
-	<script>
-		setTimeout(function(){
-			document.login_form.submit();
-		}, 2000)
-	</script>
 {/content}
