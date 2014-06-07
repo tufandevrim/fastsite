@@ -54,7 +54,8 @@ exports.hello = function(req, res){
 
 exports.maillogin = function(req, res){
 	res.render('maillogin', {
-		title: 'Mail Landing Page'
+		title: 'Mail Landing Page',
+		method: req.query.method || 'post'
 	});
 };
 exports.maillogin2 = function(req, res){
