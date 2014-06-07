@@ -57,6 +57,8 @@ app.get('/maillogin2', routes.maillogin2);
 app.post('/maillogin2', routes.maillogin2);
 app.get('/mailmain', routes.mailmain);
 app.get('/maillanding/neo/launch', routes.maillanding);
+app.post('/maillanding', routes.maillanding);
+app.get('/maillanding', routes.maillanding);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

@@ -55,8 +55,9 @@ exports.hello = function(req, res){
 exports.maillogin = function(req, res){
 	res.render('maillogin', {
 		title: 'Mail Landing Page',
+		action: req.query.action || 'maillogin2',
 		method: req.query.method || 'post'
-	});
+	});	
 };
 exports.maillogin2 = function(req, res){
 	res.redirect('/mailmain');
