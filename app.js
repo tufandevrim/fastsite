@@ -60,6 +60,12 @@ app.get('/maillanding/neo/launch', routes.maillanding);
 app.post('/maillanding', routes.maillanding);
 app.get('/maillanding', routes.maillanding);
 
+
+
+app.get('/chromeposter', routes.chromeposter);
+app.post('/chromeposted', routes.chromeposted);
+
+
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });

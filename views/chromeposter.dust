@@ -1,0 +1,11 @@
+{>layout/}
+{<content}
+	<div>Types something dummy</div>
+	<form method="{method}" action="{action}" name="login_form" id="login_form">
+		<div id="inputs">
+			<input name="login" id="username" type="text" maxlength="96" tabindex="1" aria-required="true" placeholder="User Name" autocorrect="off" value="">
+			<input name="passwd" id="passwd" type="password" maxlength="64" tabindex="2" aria-required="true" placeholder="Password" autocorrect="off" value="">
+			<input type="submit">
+		</div>
+	</form>
+{/content}

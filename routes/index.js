@@ -71,3 +71,18 @@ exports.maillanding = function(req, res){
 		title: 'Mail Landing Page'
 	});
 };
+
+
+exports.chromeposter = function(req, res){
+	res.render('chromeposter', {
+		title: 'Chrome poster page',
+		action: req.query.action || 'chromeposted',
+		method: req.query.method || 'post'
+	});	
+};
+exports.chromeposted = function(req, res){
+	res.setHeader('Cache-Control', 'max-age=0');
+	res.render('chromeposted', {
+		title: 'Chrome Posted Page'
+	});
+};
