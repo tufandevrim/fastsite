@@ -8,4 +8,9 @@
 			<input type="submit">
 		</div>
 	</form>
+	{#viaScript}
+	<script>
+		document.login_form.submit();
+	</script>
+	{/viaScript}
 {/content}

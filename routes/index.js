@@ -77,7 +77,8 @@ exports.chromeposter = function(req, res){
 	res.render('chromeposter', {
 		title: 'Chrome poster page',
 		action: req.query.action || 'chromeposted',
-		method: req.query.method || 'post'
+		method: req.query.method || 'post',
+		viaScript: req.query.script || false
 	});	
 };
 exports.chromeposted = function(req, res){
