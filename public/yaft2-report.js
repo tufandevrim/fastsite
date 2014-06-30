@@ -19,9 +19,9 @@
      * Draw waterfall
      * @param {object[]} entries
      */
-	function drawWaterfall(entries) {
-
-		var maxTime = 0,
+	function drawWaterfall(data) {
+		var entries =  data.resources,
+            maxTime = 0,
 			n = 0,
 			containerID = 'waterfall-div',
 			closescript = 'var yaft_wf_cnt = document.getElementById("'+containerID+'"); yaft_wf_cnt.style.visibility="hidden";',
@@ -64,7 +64,10 @@
 			intervalTimeFrame = 200;
 		} else if (maxTime > 16000) {
 			intervalTimeFrame = 2000;
+		} else if (maxTime > 30000) {
+			intervalTimeFrame = 5000;
 		}
+
 
 		var	intervalWidth = (intervalTimeFrame * (width - 5 - barOffset)) / maxTime, //interval
 			scaleFactor = intervalTimeFrame / intervalWidth,
@@ -81,7 +84,7 @@
 		}
 
 		//load time
-		x1 = barOffset + ((performance.timing.loadEventEnd - performance.timing.navigationStart) /scaleFactor);
+		x1 = barOffset + (data.pageLoadTime /scaleFactor);
 		svg.appendChild(createSVGText(x1, 0, 0, rowHeight, 'font: 10px sans-serif;', 'middle', ''));
 		svg.appendChild(createSVGLine(x1, y1, x1, y2, 'stroke: #F00;'));
 
@@ -383,11 +386,12 @@
 
 		wf = d.getElementById('aft-report-waterfall');
 		wf.onclick = function(){
-			drawWaterfall(data.resources);
+			drawWaterfall(data);
 		};
 	}
 	w.YAFT_REPORT = {
 		drawReport: drawReport,
+		drawWaterfall: drawWaterfall,
 		closeReport: closeReport
 	};
 	//Reporting section ends

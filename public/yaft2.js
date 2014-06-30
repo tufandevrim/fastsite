@@ -127,7 +127,7 @@
 					content: {
 						size: fileSize,
 						compression: 0,
-						mimeType: '',
+						mimeType: ''
 					},
 					redirectURL: '',
 					headersSize: -1,
@@ -146,7 +146,6 @@
 			//console.log(JSON.stringify(t) + '\n' );
 			adhoc.log.entries.push(t);
 		}
-		console.log(JSON.stringify(adhoc) + '\n' );
 		return adhoc;
 
 	}
@@ -416,7 +415,9 @@
 		}
 		return modulesReport;
 	}
-
+	function getStartRenderEndTime() {
+		return perfExists ? perf.timing.domContentLoadedEventEnd - startTime : 0;
+	}
 	function getModuleReport(mod, customReport) {
 		//get all srcs
 		var i,
@@ -425,8 +426,8 @@
 			resourceUrl,
 			resources = [],
 			resource,
-			modStart = YAFT.getStartRenderTime(), //How about YAFT.getDomInteractive
-			modEnd = YAFT.getStartRenderTime(), //How about YAFT.getDomInteractive
+			modStart = getStartRenderEndTime(), //How about YAFT.getDomInteractive
+			modEnd = getStartRenderEndTime(), //How about YAFT.getDomInteractive
 			childElements = mod.querySelectorAll('div, img, a, video, span, ul'),
 			len = childElements.length;
 
@@ -872,7 +873,7 @@
 			return perfExists ? perf.timing.loadEventStart - startTime : 0;
 		},
 		getStartRenderTime: function() {
-			return perfExists ? perf.timing.domContentLoadedEventEnd - startTime : 0;
+			return perfExists ? perf.timing.domContentLoadedEventStart - startTime : 0;
 		},
 		getDomInteractive: function(){
 			return perfExists ? perf.timing.domInteractive - startTime : 0;
