@@ -62,9 +62,9 @@
 			intervalTimeFrame = 100;
 		} else if (maxTime > 500 && maxTime <= 2000) {
 			intervalTimeFrame = 200;
-		} else if (maxTime > 16000) {
+		} else if (maxTime > 16000 && maxTime <= 40000) {
 			intervalTimeFrame = 2000;
-		} else if (maxTime > 30000) {
+		} else if (maxTime > 40000) {
 			intervalTimeFrame = 5000;
 		}
 

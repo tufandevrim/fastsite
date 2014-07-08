@@ -48,7 +48,7 @@ app.get('/delayasset/:delay/:asset', routes.delayedAsstes);
 app.get('/cacheasset/:second/:asset', routes.cacheAsset);
 app.get('/hello', routes.hello);
 
-
+app.get('/forcessl', routes.forcessl);
 
 
 
