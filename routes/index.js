@@ -92,8 +92,7 @@ exports.chromeposted = function(req, res){
 
 exports.forcessl = function(req, res) {
 	if(req.headers['x-forwarded-proto'] && req.headers['x-forwarded-proto'] === "http") {
-		//res.redirect('https://fastsite.herokuapp.com/forcessl');
-		res.end('This is not ssl');
+		res.redirect('https://fastsite.herokuapp.com/forcessl');
 	} else {
 		res.end('This is ssl');
 	}
