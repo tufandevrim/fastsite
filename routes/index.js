@@ -91,10 +91,10 @@ exports.chromeposted = function(req, res){
 
 
 exports.forcessl = function(req, res){
-	if (req.protocol !== 'https') {
-		res.end('This is not ssl');
-		//res.redirect('https://fastsite.herokuapp.com/forcessl');
-	} else {
+	if (req.connection.encrypted) {
 		res.end('This is ssl');
+	} else {
+		//res.redirect('https://fastsite.herokuapp.com/forcessl');
+		res.end('This is not ssl');
 	}
 };
