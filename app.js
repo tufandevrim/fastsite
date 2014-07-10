@@ -64,6 +64,7 @@ app.post('/chromeposted', routes.chromeposted);
 
 app.get('/forcessl', routes.forcessl);
 app.get('/forcenossl', routes.forcenossl);
+app.get('/forcesslhsts', routes.forcesslhsts);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

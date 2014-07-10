@@ -105,4 +105,15 @@ exports.forcenossl = function(req, res) {
 		title: 'SSL Overhead Test - no ssl'
 	});
 };
+exports.forcesslhsts = function(req, res) {
+	if(req.headers['x-forwarded-proto'] && req.headers['x-forwarded-proto'] === "http") {
+		//res.redirect('https://fastsite.herokuapp.com/forcessl');
+		//res.setHeader("Strict-Transport-Security", "max-age=60; includeSubDomains");
+		res.setHeader("Strict-Transport-Security", "max-age=60");
+	} else {
+		res.render('sslforce', {
+			title: 'SSL Overhead Test- redirect hsts'
+		});
+	}
+};
 
