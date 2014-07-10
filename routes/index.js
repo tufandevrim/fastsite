@@ -26,6 +26,7 @@ exports.delayedAsstes = function(req, res){
 		assetName = req.param('asset');// || 'header.png';
 
 	asset = fs.readFileSync('./public/img/'+assetName);
+	res.setHeader("Timing-Allow-Origin", "*");
 	res.writeHead(200, {'Content-Type': 'image/png' });
 	setInterval(function() {
 		res.end(asset, 'binary');
@@ -99,3 +100,9 @@ exports.forcessl = function(req, res) {
 		});
 	}
 };
+exports.forcenossl = function(req, res) {
+	res.render('sslforce', {
+		title: 'SSL Overhead Test - no ssl'
+	});
+};
+
