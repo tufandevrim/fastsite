@@ -107,9 +107,9 @@ exports.forcenossl = function(req, res) {
 };
 exports.forcesslhsts = function(req, res) {
 	if(req.headers['x-forwarded-proto'] && req.headers['x-forwarded-proto'] === "http") {
-		//res.redirect('https://fastsite.herokuapp.com/forcessl');
 		//res.setHeader("Strict-Transport-Security", "max-age=60; includeSubDomains");
 		res.setHeader("Strict-Transport-Security", "max-age=60");
+		res.redirect('https://fastsite.herokuapp.com/forcesslhsts');
 	} else {
 		res.render('sslforce', {
 			title: 'SSL Overhead Test- redirect hsts'
