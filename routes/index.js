@@ -94,6 +94,8 @@ exports.forcessl = function(req, res) {
 	if(req.headers['x-forwarded-proto'] && req.headers['x-forwarded-proto'] === "http") {
 		res.redirect('https://fastsite.herokuapp.com/forcessl');
 	} else {
-		res.end('This is ssl');
+		res.render('sslforce', {
+			title: 'SSL Overhead Test'
+		});
 	}
 };

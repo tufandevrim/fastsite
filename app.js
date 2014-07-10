@@ -48,10 +48,6 @@ app.get('/delayasset/:delay/:asset', routes.delayedAsstes);
 app.get('/cacheasset/:second/:asset', routes.cacheAsset);
 app.get('/hello', routes.hello);
 
-app.get('/forcessl', routes.forcessl);
-
-
-
 app.get('/maillogin', routes.maillogin);
 app.get('/maillogin2', routes.maillogin2);
 app.post('/maillogin2', routes.maillogin2);
@@ -64,6 +60,9 @@ app.get('/maillanding', routes.maillanding);
 
 app.get('/chromeposter', routes.chromeposter);
 app.post('/chromeposted', routes.chromeposted);
+
+
+app.get('/forcessl', routes.forcessl);
 
 
 http.createServer(app).listen(app.get('port'), function(){
