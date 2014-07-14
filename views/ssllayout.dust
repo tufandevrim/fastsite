@@ -34,7 +34,7 @@
                     useNormalizeCoverage: true
                 };
 
-            script.src = 'http://l.yimg.com/zz/combo?/os/mit/media/p/content/content-aft-min-8acb8a6.js&/os/mit/media/p/content/content-aft-report-min-a76d1fb.js';
+            script.src = 'https://l.yimg.com/zz/combo?/os/mit/media/p/content/content-aft-min-8acb8a6.js&/os/mit/media/p/content/content-aft-report-min-a76d1fb.js';
             script.type ='text/javascript';
             script.onload = function() {
                 YAFT.init(yaftConfig, function(data,error) {
