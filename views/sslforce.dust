@@ -1,14 +1,8 @@
 {>ssllayout/}
 {<content}
-	<script>
-	window.LH.init({
-		spaceid:'',
-		serverip:'', 
-		pvid:'', 
-		crumb:''
-	});
-	</script>
-	<img src="https://s1.yimg.com/os/mit/media/m/base/images/transparent-1093278.png">
-	<img src="https://s1.yimg.com/rz/d/yahoo_mail_en-US_s_f_pw_351x40_mail.png">
-	<img src="https://fastsite.herokuapp.com/delayasset/500/main.png" width="600" height="600">
+	<div id='module'>
+		<img src="https://s1.yimg.com/os/mit/media/m/base/images/transparent-1093278.png">
+		<img src="https://s1.yimg.com/rz/d/yahoo_mail_en-US_s_f_pw_351x40_mail.png">
+		<img src="https://fastsite.herokuapp.com/delayasset/500/main.png" width="600" height="600">
+	</div>
 {/content}

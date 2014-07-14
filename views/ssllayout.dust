@@ -15,5 +15,37 @@
         {+content}
         {/content}
     </div>
+    <script>
+        window.LH.init({
+            spaceid:'',
+            serverip:'', 
+            pvid:'', 
+            crumb:''
+        });
+
+        window.addEventListener('load', function() {
+            var script = document.createElement('script'),
+                scriptReport = document.createElement('script'),
+                yaftConfig = {
+                    modules: ['module'],
+                    maxWaitTime: 2000,
+                    generateHAR: true,
+                    canShowVisualReport: true,
+                    useNormalizeCoverage: true
+                };
+
+            script.src = 'http://l.yimg.com/zz/combo?/os/mit/media/p/content/content-aft-min-8acb8a6.js&/os/mit/media/p/content/content-aft-report-min-a76d1fb.js';
+            script.type ='text/javascript';
+            script.onload = function() {
+                YAFT.init(yaftConfig, function(data,error) {
+                    if (!error) {
+                        console.log(data);
+                    }
+                });
+            };
+            document.body.appendChild(script);
+        }, false);
+
+    </script>
 </body>
 </html>
