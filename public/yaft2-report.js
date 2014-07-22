@@ -93,6 +93,7 @@
 		for(n = 0; n < entries.length; n++) {
 			var entry = entries[n]; 
 			var row = createSVGGroup('translate(0,' + (n + 1) * (rowHeight + rowPadding) + ')');
+			row.appendChild(drawTooltip(entry));
 			row.appendChild(createSVGText(5, 0, 0, rowHeight, 'font: 10px sans-serif;', 'start', shortenURL(entry.url)));
 			row.appendChild(drawBar(entry, barOffset, rowHeight, scaleFactor));
 			svg.appendChild(row);
@@ -104,7 +105,32 @@
 		container.appendChild(svg);
 	}
 
-		/**
+	function drawTooltip(entry) {
+		var titEl = document.createElementNS(xmlns, 'title'),
+		    textContent = entry.url + '\n\n';
+		if (entry.dnsDuration > 0) {
+			textContent += 'DNS Lookup:' + entry.dnsDuration + '\n';
+		}
+		if (entry.tcpDuration > 0) {
+			textContent += 'TCP Duration:' + entry.tcpDuration + '\n';
+		}
+		if (entry.sslDuration > 0) {
+			textContent += 'SSL Duration:' + entry.sslDuration + '\n';
+		}
+		if (entry.requestDuration > 0) {
+			textContent += 'Request Duration:' + entry.requestDuration + '\n';
+		}
+
+		if (entry.responseDuration > 0) {
+			textContent += 'Response Duration:' + entry.responseDuration + '\n';
+		}
+
+		titEl.textContent = textContent;
+
+		return titEl;
+	}
+
+	/**
      * Draw bar for resource 
      * @param {object} entry Details of URL, and timings for individual resource
      * @param {int} barOffset Offset of the start of the bar along  x axis
@@ -256,7 +282,6 @@
      */
 	function createSVGText(x, y, dx, dy, style, anchor, text, evt) {
 		var el = document.createElementNS(xmlns, 'text');
-
 		el.setAttribute('x', x);
 		el.setAttribute('y', y);
 		el.setAttribute('dx', dx);

@@ -62,6 +62,7 @@
 			tconnect = 0,
 			tsend = 0,
 			treceive = 0,
+			tssl = -1,
 			twait = 0,
 			ttime = 0,
 			nextStart = 0;
@@ -95,6 +96,7 @@
 			dt = new Date(Math.round(navStart + entry.start));
 			tdns = Math.round(entry.dnsDuration);
 			tconnect = Math.round(entry.tcpDuration);
+			tssl =  Math.round(entry.sslDuration);
 			tsend = Math.round(entry.responseStart - entry.requestStart);
 			treceive = Math.round(entry.responseDuration);
 			twait = Math.round(entry.duration) - tdns - tconnect - tsend - treceive;
@@ -139,6 +141,7 @@
 					dns: tdns,
 					connect: tconnect,
 					send: tsend,
+					ssl: tssl,
 					wait: twait,
 					receive: treceive
 				}
@@ -222,8 +225,8 @@
 			dnsDuration: resource.domainLookupEnd - resource.domainLookupStart,
 			tcpStart: resource.connectStart + parentDelta,
 			tcpDuration: resource.connectEnd - resource.connectStart, // TODO
-			sslStart: 0, // TODO
-			sslDuration: 0, // TODO
+			sslStart: (resource.secureConnectionStart > 0) ? resource.secureConnectionStart - resource.connectStart : 0,
+			sslDuration: (resource.secureConnectionStart > 0) ? (resource.connectEnd - resource.secureConnectionStart) : -1,
 			requestStart: resource.requestStart + parentDelta,
 			requestDuration: resource.responseStart - resource.requestStart,
 			responseStart: resource.responseStart + parentDelta,
@@ -253,8 +256,8 @@
 			dnsDuration: timing.domainLookupEnd - timing.domainLookupStart,
 			tcpStart: timing.connectStart - timing.navigationStart,
 			tcpDuration: timing.connectEnd - timing.connectStart, // TODO
-			sslStart: 0, // TODO
-			sslDuration: 0, // TODO
+			sslStart: (timing.secureConnectionStart > 0) ? timing.secureConnectionStart - timing.connectStart : 0,
+			sslDuration: (timing.secureConnectionStart > 0) ? (timing.connectEnd - timing.secureConnectionStart) : -1,
 			requestStart: timing.requestStart - timing.navigationStart,
 			requestDuration: timing.responseStart - timing.requestStart,
 			responseStart: timing.responseStart - timing.navigationStart,
