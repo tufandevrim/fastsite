@@ -107,7 +107,7 @@
 
 	function drawTooltip(entry) {
 		var titEl = document.createElementNS(xmlns, 'title'),
-		    textContent = entry.url + '\n\n';
+			textContent = entry.url + '\n\n';
 		if (entry.dnsDuration > 0) {
 			textContent += 'DNS Lookup:' + entry.dnsDuration + '\n';
 		}
@@ -120,11 +120,9 @@
 		if (entry.requestDuration > 0) {
 			textContent += 'Request Duration:' + entry.requestDuration + '\n';
 		}
-
 		if (entry.responseDuration > 0) {
 			textContent += 'Response Duration:' + entry.responseDuration + '\n';
 		}
-
 		titEl.textContent = textContent;
 
 		return titEl;
