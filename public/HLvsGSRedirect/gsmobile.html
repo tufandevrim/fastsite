@@ -1199,17 +1199,17 @@ YMedia.use("media-rmp","media-i13n","media-dwell-time","node","event","json-stri
                             C.dm = DM;
                         }
                         
-                        DARLA_CONFIG.nodeMgr._prepareNodes();
+                        //DARLA_CONFIG.nodeMgr._prepareNodes();
                         
                         /* setting DARLA configuration */
-                        DARLA.config(C);
+                        //DARLA.config(C);
 
                         /* prefetch Ads if applicable */
-                        DARLA.prefetched("fc");
+                        //DARLA.prefetched("fc");
 
                         /* rendering prefetched Ad */
                         
-                                        DARLA.render();
+                                        //DARLA.render();
             
                         
                     }
@@ -1238,16 +1238,16 @@ YMedia.use("media-rmp","media-i13n","media-dwell-time","node","event","json-stri
                                 }
 
                                 /* prepare node is mainly for injected ad, eg. LREC within story body */
-                                DARLA_CONFIG.nodeMgr._prepareNodes();
+                                //DARLA_CONFIG.nodeMgr._prepareNodes();
 
                                 /* setting DARLA configuration */
-                                DARLA.config(DARLA_CONFIG);
+                                //DARLA.config(DARLA_CONFIG);
 
                                 /* prefetch Ads if applicable */
-                                DARLA.prefetched("fc");
+                                //DARLA.prefetched("fc");
 
                                 /* rendering prefetched Ad */
-                                DARLA.render();
+                                //DARLA.render();
                             }
                         }
                     };
