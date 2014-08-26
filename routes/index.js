@@ -126,6 +126,6 @@ exports.mobilehl = function(req, res) {
 	res.sendfile('./public/HLvsGSRedirect/hlmobile.html');
 };
 exports.mobilehlredirect = function(req, res) {
-
+	res.redirect(302, 'https://fastsite.herokuapp.com/mobilehl');
 };
 
