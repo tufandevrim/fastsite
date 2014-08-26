@@ -66,6 +66,11 @@ app.get('/forcessl', routes.forcessl);
 app.get('/forcenossl', routes.forcenossl);
 app.get('/forcesslhsts', routes.forcesslhsts);
 
+app.get('/mobilegs', routes.mobilegs);
+app.get('/mobilehl', routes.mobilehl);
+app.get('/mobilehlredirect', routes.mobilehlredirect);
+
+
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });

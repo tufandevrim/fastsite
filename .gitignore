@@ -1,17 +1,13 @@
-# vim swap files
-*~
-*.swp
-*.swo
-
-# vim plugins
-.netrwhist
-
-# python compiled byte-code
-*.pyc
-
-# OSX Finder Desktop Service Store
-.DS_Store
-._.DS_Store
-
-# ignore node_modules
 node_modules
+npm-debug.log
+.DS_Store
+
+# docs directory
+docs
+
+# build directory
+build
+artifacts
+arrow-target
+coverage
+arrow-coverage.json

@@ -117,3 +117,15 @@ exports.forcesslhsts = function(req, res) {
 	}
 };
 
+
+
+exports.mobilegs = function(req, res) {
+	res.sendfile('./public/HLvsGSRedirect/gsmobile.html');
+};
+exports.mobilehl = function(req, res) {
+	res.sendfile('./public/HLvsGSRedirect/hlmobile.html');
+};
+exports.mobilehlredirect = function(req, res) {
+
+};
+
