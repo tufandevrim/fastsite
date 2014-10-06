@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Loading a module after load time</title>
+	<title>XHR does not block window.load event (PLT)</title>
 	<style>
 		body, img, div {
 			margin: 0;
@@ -61,12 +61,12 @@
 			canShowVisualReport: true,
 			useNormalizeCoverage: true
 		};
+
 		YAFT.init(yaftConfig, function(data,error) {
 			if (!error) {
 				console.log(data);
 			}
 		});
-		
 
 		function loadXMLDoc(pageLink) {
 		    var xmlhttp;
@@ -80,22 +80,21 @@
 		    }
 
 		    xmlhttp.onreadystatechange = function() {
-		        if (xmlhttp.readyState == 4 ) {
-		           if(xmlhttp.status == 200){
-		           	document.getElementById('module_ad').innerHTML =  '<img src="http://fastsite.herokuapp.com/delayasset/1000/ad.png"  width="300" height="600">';
-		           }
-		           else if(xmlhttp.status == 400) {
-		              alert('There was an error 400');
-		           }
-		           else {
-		               alert('something else other than 200 was returned');
-		           }
-		        }
+				if (xmlhttp.readyState == 4 ) {
+					if(xmlhttp.status == 200){
+						document.getElementById('module_ad').innerHTML =  '<img src="http://fastsite.herokuapp.com/delayasset/1000/ad.png"  width="300" height="600">';
+					} else if(xmlhttp.status == 400) {
+						alert('There was an error 400');
+					} else {
+						alert('something else other than 200 was returned');
+					}
+				}
 			};
 
-		    xmlhttp.open("GET", pageLink, true);
-		    xmlhttp.send();
+			xmlhttp.open("GET", pageLink, true);
+			xmlhttp.send();
 		}
+
 		loadXMLDoc("http://fastsite.herokuapp.com/delayxhr/4000");
 		
 
