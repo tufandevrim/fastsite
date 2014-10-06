@@ -71,6 +71,9 @@ app.get('/mobilehl', routes.mobilehl);
 app.get('/mobilehlredirect', routes.mobilehlredirect);
 
 
+app.get('/delayxhr/:delay', routes.delayXHR);
+
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
+

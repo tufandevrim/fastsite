@@ -129,3 +129,24 @@ exports.mobilehlredirect = function(req, res) {
 	res.redirect(302, 'https://fastsite.herokuapp.com/mobilehl');
 };
 
+
+exports.delayXHR = function(req, res){
+	var addlatency = req.param('delay') || 1000;
+	 res.setHeader('Content-Type', 'application/json');
+	setInterval(function() {
+		res.end('{delayed:' + addlatency + '}');
+	},addlatency);
+};
+
+exports.delayBeacon = function(req, res){
+	var addlatency = req.param('addlatency') || 1000;
+	setInterval(function() {
+		res.redirect(302, 'http://l.yimg.com/os/mit/media/m/base/images/transparent-649ba6f.png');
+	},addlatency);
+};
+
+
+
+
+
+
