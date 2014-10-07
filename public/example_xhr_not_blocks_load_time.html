@@ -82,7 +82,7 @@
 		    xmlhttp.onreadystatechange = function() {
 				if (xmlhttp.readyState == 4 ) {
 					if(xmlhttp.status == 200){
-						document.getElementById('module_ad').innerHTML =  '<img src="http://fastsite.herokuapp.com/delayasset/1000/ad.png"  width="300" height="600">';
+						document.getElementById('module_ad').innerHTML =  '<img src="http://fastsite.herokuapp.com/delayasset/500/ad.png"  width="300" height="600">';
 					} else if(xmlhttp.status == 400) {
 						alert('There was an error 400');
 					} else {
@@ -95,7 +95,7 @@
 			xmlhttp.send();
 		}
 
-		loadXMLDoc("http://fastsite.herokuapp.com/delayxhr/4000");
+		loadXMLDoc("http://fastsite.herokuapp.com/delayxhr/3000");
 		
 
 	</script>
