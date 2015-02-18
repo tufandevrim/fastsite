@@ -74,7 +74,7 @@
 		};
 		YAFT.init(yaftConfig, function(data,error) {
 			if (!error) {
-				console.log(data);
+				if (console) console.log(data);
 			}
 		});
 
@@ -91,7 +91,7 @@
 
 			var getRrdMainImg = function(){
 				var imgLoadTime = '1'+Math.floor(Math.random()*10)+'00';
-				console.log(imgLoadTime);
+				if (console) console.log(imgLoadTime);
 				return '//fastsite.herokuapp.com/delayasset/'+imgLoadTime+'/main.png';
 			};
 
