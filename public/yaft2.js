@@ -704,6 +704,10 @@
 	function startAft2() {
 		modules = {};
 		modulesReport = {};
+		if (!perfExists || !isInitialized) {
+			return false;
+		}
+
 		//first remove the report
 		if (showReport === true && confs.canShowVisualReport && w.YAFT_REPORT && w.YAFT_REPORT.removeReport) {
 			w.YAFT_REPORT.removeReport();
@@ -727,7 +731,7 @@
 			domElementsCount = 0;
 
 		if (!perfExists || !isInitialized) {
-			callback(null, 'Nav or resource timing or both are not available');
+			callback(null, 'Nav or resource timing or both are not available or YAFT is not initialized');
 			return false;
 		}
 
