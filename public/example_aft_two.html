@@ -59,8 +59,8 @@
 		</div>
 
 	</div>
-	<script type="text/javascript" src="yaft2-report.js"></script>
-	<script type="text/javascript" src="yaft2.js"></script>
+	<script type="text/javascript" src="../src/yaft2-report.js"></script>
+	<script type="text/javascript" src="../src/yaft2.js"></script>
 	
 	<script>
 
@@ -80,7 +80,6 @@
 
 
 
-		var xPerf = window.performance;
 		function aft2(){
 			var mainContainer = document.getElementById('aft2container');
 
@@ -98,7 +97,6 @@
 
 			YAFT.AFT2.start();
 
-			t1 = xPerf.now();
 			//Say XHR/PJAX whatever starts at this point
 			//************   CALL YAFT START   ************
 			while (mainContainer.hasChildNodes()) {
@@ -127,10 +125,9 @@
 						mainContainer.appendChild(imgContainerMod);
 						mainContainer.appendChild(imgContainerMod2);
 
-						t2 = xPerf.now();
 						YAFT.AFT2.end(function(data, error){
 							if (data) {
-								console.log(data);
+								if (console) console.log(data);
 							}
 						});
 					}
