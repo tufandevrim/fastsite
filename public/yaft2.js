@@ -16,11 +16,15 @@
 			useNormalizeCoverage: true,
 			useCustomSelector: false,
 			canShowVisualReport: true,
+			useNativeStartRender: false,
 			generateHAR: false,
 			maxWaitTime: 3000,
 			modules: [],
-			modulesExclude: []
+			modulesExclude: [],
+			modulesAft2Container: [],
+			plugins: []
 		},
+		startRender = 0,
 		viewport,
 		aft = 0,
 		totalCoveragePercentage = 0,
@@ -29,7 +33,13 @@
 		timings = {},
 		modules = {},
 		visuallyComplete = 0,
-		modulesReport = {};
+		modulesReport = {},
+		aft2StartTime = 0, // delta between navstarttime and second AFT start time
+		aft2EndTime = 0,
+		aft2NavStart = 0,
+		aft2StartRender = 0,
+		aftTimer = 0, //first aft setTimeoutID
+		aft2Timer = 0; //second aft setTimeoutID
 
 	/**
 	 * Clones an object. Simplified recursive version
@@ -83,7 +93,7 @@
 					title: d.location.href,
 					pageTimings: {
 						onContentLoad: ntiming.domInteractive - navStart,
-						onLoad: ntiming.loadEventEnd - navStart
+						onLoad: ntiming.loadEventStart - navStart
 					}
 				}],
 				entries : [],
@@ -310,7 +320,22 @@
 			isInViewport : function(e, notID) {
 				var bounds = this.getElementBounds(e, notID);
 				//adding bounds.bottom and bounds.right limit
-				return (bounds.top < this.viewportHeight && bounds.left < this.viewportWidth && bounds.bottom >= 0 && bounds.right >= 0);
+				return (bounds.top < this.viewportHeight && bounds.left < this.viewportWidth && bounds.bottom >= 0 && bounds.right >= 0 && this.isVisible(e, notID));
+			},
+			isVisible : function(e, notID) {
+				var visbl = true,
+					elem = e;
+				if (!notID) {
+					elem = d.getElementById(e);
+				}
+				visbl = visbl && elem.offsetWidth > 0 && elem.offsetHeight > 0;
+				if(visbl) {
+					while('BODY' != elem.tagName && visbl) {
+						visbl = visbl && 'hidden' != w.getComputedStyle(elem).visibility;
+						elem = elem.parentElement;
+					}
+				}
+				return visbl;
 			},
 			getElementCoverage : function(e) {
 				var bounds = this.getElementBounds(e),
@@ -355,17 +380,26 @@
 		};
 	}
 
-	function getAndSetModules(rules, exclusions) {
+	function getAndSetModules(rules, exclude, aft2Container) {
 		var modName = '',
-			i,
-			j,
-			k,
+			i, j,
 			rule,
-			elems,
+			elems, el,
 			elemsLen,
 			matches = false,
-			exLen = (exclusions && exclusions.length) ? exclusions.length : 0,
+			exclusions = [],
+			exLen = 0,
+			isAft2Elem = false,
 			len = (rules && rules.length) ?  rules.length : 0;
+
+		if (exclude && !aft2Container) {
+			exclusions = exclude;
+		} else if (!exclude && aft2Container) {
+			exclusions = aft2Container;
+		} else if (exclude && aft2Container) {
+			exclusions = exclude.concat(aft2Container);
+		}
+		exLen = (exclusions && exclusions.length) ? exclusions.length : 0;
 
 		for (i = 0; i < len; i+=1) {
 			rule = rules[i];
@@ -373,7 +407,7 @@
 			if (confs.useCustomSelector) {
 				elems = d.querySelectorAll(rule);
 			} else {
-				elems = d.querySelectorAll('div[id^="' + rule + '"],section[id^="' + rule + '"], ul[id^="' + rule + '"]');
+				elems = d.querySelectorAll('div[id^="' + rule + '"],section[id^="' + rule + '"], ul[id^="' + rule + '"], ol[id^="' + rule + '"], li[id^="' + rule + '"]');
 			}
 
 			elemsLen = elems.length;
@@ -381,15 +415,26 @@
 				modName = elems[j].id;
 				matches = false;
 
-				for (k = 0; k < exLen; k += 1) {
-					if (modName.search(exclusions[k]) !== -1) {
-						matches = true;
-						break;
-					}
+				if (exclusions.indexOf(modName) !== -1) {
+					matches = true;
 				}
 
-				if (!matches) {
+				if (!matches && !modules[modName]) {
 					//TODO: check if its parent or any of child node is there too
+
+					//check if element is aft2 element
+					if (aft2Container) {
+						isAft2Elem = false;
+						el = elems[j];
+						while (el.parentNode) {
+							if (aft2Container.indexOf(el.parentNode.id) !== -1) {
+								isAft2Elem = true;
+								break;
+							}
+							el = el.parentNode;
+						}
+					}
+					elems[j].dataAft2mod = isAft2Elem;
 					modules[modName] = elems[j];
 				}
 			}
@@ -409,67 +454,114 @@
 
 		for (modId in mods){
 			if (mods.hasOwnProperty(modId)) {
-				if (!modulesReport[modId]) {
-					
+				//if (!modulesReport[modId]) {
 					modulesReport[modId] = getModuleReport(mods[modId]);
-
-				}
+				//} 
 			}
 		}
 		return modulesReport;
 	}
-	function getStartRenderEndTime() {
-		return perfExists ? perf.timing.domContentLoadedEventEnd - startTime : 0;
+	function getModuleStartTime() {
+		if (confs.useNativeStartRender) {
+			if (startRender) {
+				return startRender;
+			} else {
+				return YAFT.getStartRenderTime();
+			}
+		} else {
+			return perfExists ? perf.timing.domContentLoadedEventStart - startTime : 0;
+		}
 	}
+
 	function getModuleReport(mod, customReport) {
 		//get all srcs
 		var i,
 			elem,
 			isCustom = false,
+			isAft2Module = false,
 			resourceUrl,
 			resources = [],
 			resource,
-			modStart = getStartRenderEndTime(), //How about YAFT.getDomInteractive
-			modEnd = getStartRenderEndTime(), //How about YAFT.getDomInteractive
-			childElements = mod.querySelectorAll('div, img, a, video, span, ul'),
+			modStart = aft2StartTime ? aft2StartRender : getModuleStartTime(),
+			modEnd = modStart,
+			childElements = mod.querySelectorAll('div, img, a, video, span, ul, li'),
 			len = childElements.length;
+		
+		function getElemResourceUrl(el) {
+			var resUrl = '';
+			if (el.nodeName === 'VIDEO') {
+				//TODO
+			} else if (el.src) {
+				resUrl = el.src;
+			} else if (el.style && el.style.backgroundImage) {
+				resUrl = el.style.backgroundImage.slice(4, -1);
+			}
+			return resUrl;
+		}
+
+		if (mod.dataAft2mod) {
+			isAft2Module = true;
+		}
 
 		if (!customReport) {
-			if (childElements && len > 0) {
-				// Get all child elements which has media module which requires http requests
-				for (i =0; i < len; i += 1) {
-					resourceUrl = '';
-					elem = childElements[i];
 
-					if (elem.nodeName === 'VIDEO') {
-						//TODO
-					} else if (elem.src) {
-						resourceUrl = elem.src;
-					} else if (elem.style && elem.style.backgroundImage) {
-						resourceUrl = elem.style.backgroundImage.slice(4, -1);
+			if (aft2StartTime > 0 && !isAft2Module) {
+				//if it is aft2 calculation but the module is NOT aft2 module
+				modStart = 0;
+				modEnd = 0;
+
+			} else {
+				//AFT or (AFT2 calculation with AFT modules)
+				// Check element itself first wheater it has a resource or not
+
+				resourceUrl = getElemResourceUrl(mod);
+				if (resourceUrl) {
+					resource = perf.getEntriesByName(resourceUrl);
+					if (resource && resource.length && resource.length > 0 && viewport.isInViewport(mod, true)) {
+						resources.push(createEntryFromResourceTiming(resource[0]));
 					}
+				}
 
-					if (resourceUrl) {
-						resource = perf.getEntriesByName(resourceUrl);
-						if (resource && resource.length && resource.length > 0 && viewport.isInViewport(elem, true)) {
-							resources.push(createEntryFromResourceTiming(resource[0]));
+				if (childElements && len > 0) {
+					// Get all child elements which has media module which requires http requests
+					for (i =0; i < len; i += 1) {
+						elem = childElements[i];
+						resourceUrl = getElemResourceUrl(elem);
+						if (resourceUrl) {
+							resource = perf.getEntriesByName(resourceUrl);
+							if (resource && resource.length && resource.length > 0 && viewport.isInViewport(elem, true)) {
+								resources.push(createEntryFromResourceTiming(resource[0]));
+							}
+						}
+					}
+				}
+				len = resources.length;
+				if (len > 0) {
+					for (i =0; i < len; i += 1) {
+						if (aft2StartTime > 0 && isAft2Module) {
+							//if it is aft2 calculation and the module is aft2 module
+							resources[i].start -= aft2StartTime;
+							resources[i].durationFromNStart -= aft2StartTime;
+							if (resources[i].start <= 0) {
+								resources[i].start = modStart;
+							}
+							if (resources[i].durationFromNStart <= 0) {
+								resources[i].durationFromNStart = modEnd;
+							}
+						} 
+
+						if (resources[i].start > modStart) {
+							modStart = resources[i].start;
+						}
+						if (resources[i].durationFromNStart > modEnd) {
+							modEnd = resources[i].durationFromNStart;
 						}
 					}
 				}
 			}
 
-			len = resources.length;
-			if (len > 0) {
-				for (i =0; i < len; i += 1) {
-					if (resources[i].start > modStart) {
-						modStart = resources[i].start;
-					}
-					if (resources[i].durationFromNStart > modEnd) {
-						modEnd = resources[i].durationFromNStart;
-					}
-				}
-			}
 		} else {
+			//Custom report
 			isCustom = true;
 			if (customReport.modStart) {
 				modStart = customReport.modStart;
@@ -481,6 +573,7 @@
 
 		return {
 			isCustom: isCustom,
+			isAft2Module: isAft2Module,
 			start: modStart,
 			loadTime: modEnd,
 			name: mod.id,
@@ -493,7 +586,7 @@
 
 	function getTotalCoverage(modReports) {
 		var key,
-			modCov =0,
+			modCov = 0,
 			totCov = 0;
 
 		for (key in modReports){
@@ -526,40 +619,46 @@
 	}
 	function getAFT(modsReport) {
 		var aboveFoldTime = 0, //aka Speedindex
-			rnow = perf.now(), //right now
+			rnow = perf.now() - aft2StartTime, //right now from navigation timing api
 			aftIntervalCount = Math.floor(rnow / 100), // 100ms per interval. Should be max 500. Dont kill the memory
 			aftIntervals = new Array(aftIntervalCount), //set intervals array for aft calculation and graph for visualization
 			i,
 			normTotCovPerc = 0,
 			key;
 
-			//init intervals
-			for (i = 0; i < aftIntervalCount; i += 1) {
-				aftIntervals[i] = 0;
-			}
-			i = 0;
-			for (key in modsReport){
-				if (modsReport.hasOwnProperty(key) && modsReport[key].inViewPort && Math.round(modsReport[key].coveragePercentage) > 0) {
-					if (confs.useNormalizeCoverage) {
-						modsReport[key].normCoveragePercentage =  (modsReport[key].coveragePercentage / totalCoveragePercentage) * 100;
-						normTotCovPerc += modsReport[key].normCoveragePercentage;
-					}
-
-					if (modsReport[key].loadTime > 0) {
-						i = Math.round(modsReport[key].loadTime / 100);
-						aftIntervals[i] += confs.useNormalizeCoverage ? modsReport[key].normCoveragePercentage: modsReport[key].coveragePercentage; 
-					}
-				}
-			}
-
-			for (i = 1; i < aftIntervalCount; i += 1) {
-				aftIntervals[i] = aftIntervals[i - 1] + aftIntervals[i];
+		//init intervals
+		for (i = 0; i < aftIntervalCount; i += 1) {
+			aftIntervals[i] = 0;
+		}
+		i = 0;
+		for (key in modsReport){
+			if (modsReport.hasOwnProperty(key) && modsReport[key].inViewPort && Math.round(modsReport[key].coveragePercentage) > 0) {
 				if (confs.useNormalizeCoverage) {
-					aboveFoldTime += (normTotCovPerc - aftIntervals[i]);
-				} else {
-					aboveFoldTime += (totalCoveragePercentage - aftIntervals[i]);
+					modsReport[key].normCoveragePercentage =  (modsReport[key].coveragePercentage / totalCoveragePercentage) * 100;
+					normTotCovPerc += modsReport[key].normCoveragePercentage;
+				}
+
+				if (modsReport[key].loadTime >= 0) {
+					i = Math.round(modsReport[key].loadTime / 100);
+					aftIntervals[i] += confs.useNormalizeCoverage ? modsReport[key].normCoveragePercentage: modsReport[key].coveragePercentage;
 				}
 			}
+		}
+
+
+		if (confs.useNormalizeCoverage) {
+			aboveFoldTime += (normTotCovPerc - aftIntervals[0]);
+		} else {
+			aboveFoldTime += (totalCoveragePercentage - aftIntervals[0]);
+		}
+		for (i = 1; i < aftIntervalCount; i += 1) {
+			aftIntervals[i] = aftIntervals[i - 1] + aftIntervals[i];
+			if (confs.useNormalizeCoverage) {
+				aboveFoldTime += (normTotCovPerc - aftIntervals[i]);
+			} else {
+				aboveFoldTime += (totalCoveragePercentage - aftIntervals[i]);
+			}
+		}
 
 		return {
 			aft: aboveFoldTime,
@@ -601,22 +700,132 @@
 
 		return httpReqReport;
 	}
+
+	function startAft2() {
+		modules = {};
+		modulesReport = {};
+		//first remove the report
+		if (showReport === true && confs.canShowVisualReport && w.YAFT_REPORT && w.YAFT_REPORT.removeReport) {
+			w.YAFT_REPORT.removeReport();
+		}
+		//if aft2 and aft setTimeout id are on, kill it
+		if (aftTimer) {
+			clearTimeout(aftTimer);
+		}
+		if (aft2Timer) {
+			clearTimeout(aft2Timer);
+		}
+		aft2StartTime = perf.now(); // 1000ms
+		aft2NavStart = aft2StartTime + startTime;
+	}
+
+	function endAft2(callback) {
+		var data = {},
+			aftData = {},
+			modsReport = {},
+			har = {},
+			domElementsCount = 0;
+
+		if (!perfExists || !isInitialized) {
+			callback(null, 'Nav or resource timing or both are not available');
+			return false;
+		}
+
+		aft2EndTime = perf.now(); // 1200ms
+		aft2StartRender = aft2EndTime - aft2StartTime;
+		
+		if (confs.maxWaitTime && confs.maxWaitTime > 0) {
+			aft2Timer = setTimeout(function() {
+				if (!viewport) {
+					viewport = getViewPortObject();
+				}
+
+				timings = getTimings();
+
+				domElementsCount = YAFT.getDomElementsCount();
+
+				getAndSetModules(confs.modules, confs.modulesExclude, confs.modulesAft2Container);
+
+				prepareModulesReport(modules);
+
+				modsReport = YAFT.getFinalModulesReport();
+				
+				//1.5 get total coverage
+				totalCoveragePercentage = getTotalCoverage(modsReport);
+
+				//1.5 finanlly calculate AFT
+				aftData = getAFT(modsReport);
+				normTotalCoveragePercentage = aftData.normTotalCoveragePercentage;
+
+				//4. Calculate Visually Complete
+				visuallyComplete = getVisuallyComplete(aftData.aftIntervals);
+
+				if (confs.generateHAR) {
+					har = getHAR(timings);
+				}
+
+				data = {
+					aft: aftData.aft,
+					startRender: aft2StartRender,
+					event: 'aft2',
+					modulesReport: modsReport,
+					totalCoveragePercentage: totalCoveragePercentage,
+					normTotalCoveragePercentage: normTotalCoveragePercentage,
+					domElementsCount: domElementsCount,
+					resources: timings,
+					har: har,
+					visuallyComplete: visuallyComplete
+				};
+
+				if (callback) {
+					callback(data);
+				}
+				//lastly draw the report
+				if (showReport === true && confs.canShowVisualReport && w.YAFT_REPORT && w.YAFT_REPORT.drawReport) {
+					w.YAFT_REPORT.drawReport(data, aftData.aftIntervals);
+				}
+
+			}, confs.maxWaitTime);
+		}		
+	}
+
 	function finalResult(evnt, callback) {
 		var data = {},
 			aftData = {},
 			pageLoadTime = YAFT.getPageLoadTime(),
-			startRender = YAFT.getStartRenderTime(),
+			domContentLoaded = YAFT.getDomContentLoaded(),
 			domElementsCount = YAFT.getDomElementsCount(),
 			ttfb = YAFT.getTTFB(),
 			domInteractive = YAFT.getDomInteractive(),
 			modsReport = {},
 			har = {},
-			httpRequests = {};
+			httpRequests = {},
+			prePlugins = [],
+			postPlugIns = [],
+			i;
 
+		startRender = YAFT.getStartRenderTime();
 		timings = getTimings();
 		if (!(timings && timings.length && timings.length > 0)) {
 			callback(null, 'No timings available');
 			return;
+		}
+
+		if(confs.plugins) {
+			for(i = 0; i < confs.plugins.length; i += 1) {
+				if(window['yaft_' + confs.plugins[i].name]) {
+					if (confs.plugins[i].isPre) {
+						prePlugins.push(confs.plugins[i]);
+						YAFT.logToConsole('YAFT plugin ' + confs.plugins[i].name + ' will be executed before the callback');
+					} else {
+						postPlugIns.push(confs.plugins[i]);
+						YAFT.logToConsole('YAFT plugin ' + confs.plugins[i].name + ' will be executed after the callback');
+					}
+				}
+				else {
+					YAFT.logToConsole('YAFT plugin ' + confs.plugins[i].name + ' not found');
+				}
+			}
 		}
 
 		//1. Calculate AFT
@@ -624,14 +833,14 @@
 		if (!viewport) {
 			viewport = getViewPortObject();
 		}
-		
+
 		//1.3 get all modules and set to modules variable
-		getAndSetModules(confs.modules, confs.modulesExclude);
+		getAndSetModules(confs.modules, confs.modulesExclude, confs.modulesAft2Container);
 		
-		//1.4 prepare module report which sets to modulesReport variable
+		//1.4 prepare module report which sets to "modulesReport" variable
 		prepareModulesReport(modules);
 
-		// I could have just used just modulesReport variable but I needed this to make unit test working
+		// I could have just used just "modulesReport" variable but I needed this to make unit test working
 		modsReport = YAFT.getFinalModulesReport();
 
 		//1.5 get total coverage
@@ -659,6 +868,7 @@
 			pageLoadTime: pageLoadTime,
 			startRender: startRender,
 			domInteractive: domInteractive,
+			domContentLoaded: domContentLoaded,
 			ttfb: ttfb,
 			event: evnt,
 			modulesReport: modsReport,
@@ -672,15 +882,38 @@
 			visuallyComplete: visuallyComplete
 		};
 
-		//finally call callback
+		//execute pre plugins before the callback
+		for(i = 0; i < prePlugins.length; i += 1) {
+			try {
+				window['yaft_' + prePlugins[i].name].execute(prePlugins[i].config, data);
+			}
+			catch(e) {
+				YAFT.logToConsole('YAFT plugin ' + prePlugins[i].name + ' failed to execute');
+				YAFT.logToConsole(e);
+			}
+		}
+
+		//call the callback
 		if (callback) {
 			YAFT.logToConsole(data);
 			YAFT.logToConsole(aftData.aftIntervals);
 			callback(data);
 		}
 
+		//execute post plugins after the callback
+		for(i = 0; i < postPlugIns.length; i += 1) {
+			try {
+				window['yaft_' + postPlugIns[i].name].execute(postPlugIns[i].config, data);
+			}
+			catch(e) {
+				YAFT.logToConsole('YAFT plugin ' + postPlugIns[i].name + ' failed to execute');
+				YAFT.logToConsole(e);
+			}
+		}
+
+		//lastly draw the report
 		if (showReport === true && confs.canShowVisualReport && w.YAFT_REPORT && w.YAFT_REPORT.drawReport) {
-			w.YAFT_REPORT.drawReport(data);
+			w.YAFT_REPORT.drawReport(data, aftData.aftIntervals);
 		}
 	}
 
@@ -698,7 +931,7 @@
 		//add extra wait
 		if (confs.maxWaitTime && confs.maxWaitTime > 0) {
 
-			setTimeout(function(){
+			aftTimer = setTimeout(function(){
 				finalResult(evnt, callback);
 			}, confs.maxWaitTime);
 
@@ -864,6 +1097,10 @@
 				}
 			}
 		},
+		AFT2: {
+			start: startAft2,
+			end: endAft2
+		},
 		getDomElementsCount: function(){
 			//it is exactly what WPT does but this shows a lot more. Why?
 			//https://code.google.com/p/webpagetest/source/browse/trunk/agent/browser/chrome/extension/wpt/script.js#77
@@ -875,8 +1112,35 @@
 		getPageLoadTime: function(){
 			return perfExists ? perf.timing.loadEventStart - startTime : 0;
 		},
-		getStartRenderTime: function() {
+		getDomContentLoaded: function(){
 			return perfExists ? perf.timing.domContentLoadedEventStart - startTime : 0;
+		},
+		getStartRenderTime: function() {
+			var dclt, firstPaint, chromeTimes, slt;
+			if (!perfExists) {
+				return 0;
+			}
+			dclt = this.getDomContentLoaded();
+			// If the browser supports a first paint event, just use what the browser reports
+			if ('msFirstPaint' in w.performance.timing) {
+				firstPaint = w.performance.timing.msFirstPaint - startTime;
+			} else if ('chrome' in w && 'loadTimes' in w.chrome && w.chrome.loadTimes) {
+				chromeTimes = w.chrome.loadTimes();
+				if ('firstPaintTime' in chromeTimes && chromeTimes.firstPaintTime > 0) {
+					slt = chromeTimes.startLoadTime;
+					if ('requestTime' in chromeTimes) {
+						slt = chromeTimes.requestTime;
+					}
+					if (chromeTimes.firstPaintTime >= slt) {
+						firstPaint = (chromeTimes.firstPaintTime - slt) * 1000.0;
+					}
+				}
+			}
+			// If we get insane values or firstPaint is not supported, use domContentLoadedEventStart for the last resort
+			if (firstPaint === undefined || firstPaint < 0 || (firstPaint > 120000 && firstPaint > dclt)) {
+				return dclt;
+			}
+			return firstPaint;
 		},
 		getDomInteractive: function(){
 			return perfExists ? perf.timing.domInteractive - startTime : 0;

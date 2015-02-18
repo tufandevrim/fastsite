@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>AFT 2 Example</title>
+	<style>
+		body, img, div {
+			margin: 0;
+			padding: 0;
+		}
+		.title {
+			text-align: center;
+		}
+		.main_wrapper {
+			margin: 0 auto;
+			width: 900px;
+			height:700px;
+		}
+
+		.head {
+			width:900px;
+			height:100px;
+		}
+
+		.main {
+			width:600px;
+			height:600px;
+			float:left;
+		}
+		.right {
+			width:300px;
+			height:600px;
+			float:left;
+		}
+		.aft2 {
+			text-align: center;
+		}
+	</style>
+</head>
+<body>
+	<div class="main_wrapper">
+		<div class="title">
+			AFT 2 Example
+		</div>
+		<div class="head">
+			<div id="module_head">
+				<img src="//fastsite.herokuapp.com/delayasset/1000/header.png" width="900" height="100">
+			</div>
+		</div>
+		<div class="main" id='aft2container'>
+			<div id="module_main">
+				<img src="//fastsite.herokuapp.com/delayasset/2000/main.png" width="600" height="600" id="main_img">
+			</div>
+		</div>
+		<div class="right">
+			<div id="module_right">
+				<div class="aft2"><a href="#" onClick="aft2();">Click for AFT 2</a></div>
+				<img src="//fastsite.herokuapp.com/delayasset/3000/ad.png" width="300" height="584">
+			</div>
+		</div>
+
+	</div>
+	<script type="text/javascript" src="yaft2-report.js"></script>
+	<script type="text/javascript" src="yaft2.js"></script>
+	
+	<script>
+
+		var yaftConfig = {
+			modules: ['module'],
+			modulesAft2Container: ['aft2container'],
+			maxWaitTime: 3000,
+			generateHAR: true,
+			canShowVisualReport: true,
+			useNormalizeCoverage: true
+		};
+		YAFT.init(yaftConfig, function(data,error) {
+			if (!error) {
+				console.log(data);
+			}
+		});
+
+
+
+		var xPerf = window.performance;
+		function aft2(){
+			var mainContainer = document.getElementById('aft2container');
+
+			var newImg = document.createElement('img');
+			var newImg2 = document.createElement('img');
+			var imgContainerMod = document.createElement('div');
+			var imgContainerMod2 = document.createElement('div');
+			var t1, t2;
+
+			var getRrdMainImg = function(){
+				var imgLoadTime = '1'+Math.floor(Math.random()*10)+'00';
+				console.log(imgLoadTime);
+				return '//fastsite.herokuapp.com/delayasset/'+imgLoadTime+'/main.png';
+			};
+
+			YAFT.AFT2.start();
+
+			t1 = xPerf.now();
+			//Say XHR/PJAX whatever starts at this point
+			//************   CALL YAFT START   ************
+			while (mainContainer.hasChildNodes()) {
+    			mainContainer.removeChild(mainContainer.lastChild);
+			}
+
+			setTimeout(function(){
+				//XHR/PJAX whatever took 1 sec to get result
+
+
+				setTimeout(function(){
+					//300ms took to render the new HTML content into body
+					////************   CALL YAFT END   ************
+					if (mainContainer) {
+						imgContainerMod.id = 'module_main2';
+						imgContainerMod2.id = 'module_main3';
+
+						newImg.src = getRrdMainImg();
+						newImg.width='600';
+						newImg.height='298';
+						newImg2.src = getRrdMainImg();
+						newImg2.width='600';
+						newImg2.height='298';
+						imgContainerMod.appendChild(newImg);
+						imgContainerMod2.appendChild(newImg2);
+						mainContainer.appendChild(imgContainerMod);
+						mainContainer.appendChild(imgContainerMod2);
+
+						t2 = xPerf.now();
+						YAFT.AFT2.end(function(data, error){
+							if (data) {
+								console.log(data);
+							}
+						});
+					}
+
+
+				},50);
+			},50);
+
+
+		}
+	</script>
+</body>
+</html>

@@ -13,7 +13,54 @@
 			ssl: 'rgb(213,102, 223)',
 			request: 'rgb(64, 255, 64)',
 			response: 'rgb(52, 150, 255)'
-	};
+		},
+		isWFShown = false,
+		isWFDrawn = false,
+		extraData = [];
+
+	function addExtra(yaftDataProbName) {
+		var extElem, dataContainer = d.getElementById('yaft-data-container');
+		extraData.push(yaftDataProbName);
+		if (dataContainer) {
+			extElem = d.createElement('li');
+			extElem.innerHTML = getExtraElement(yaftDataProbName);
+			dataContainer.appendChild(extElem);
+		}
+	}
+
+	function toggleWaterfall() {
+		var yaftWfCnt = document.getElementById('waterfall-div');
+		if (yaftWfCnt) {
+			if (isWFShown) {
+				//close
+				isWFShown = false;
+				yaftWfCnt.style.visibility = 'hidden';
+			} else {
+				//show
+				yaftWfCnt.style.visibility = 'visible';
+				isWFShown = true;
+			}
+		}
+	}
+
+	function drawVisReport(container, visProgress) {
+		var svg = createSVG(container.offsetWidth, container.offsetHeight),
+			n = 0,
+			numberOfLines = visProgress.length,
+			xratio = (container.offsetWidth) / numberOfLines,
+			yratio = (container.offsetHeight -2 ) / 100;
+
+		container.appendChild(svg);
+		for (n = 0; n < numberOfLines; n += 1) {
+			svg.appendChild(createSVGLine(
+				(n * xratio),
+				container.offsetHeight - 2,
+				(n * xratio),
+				container.offsetHeight - 2 - (yratio * visProgress[n]),
+				'stroke: #ccc;stroke-width:'+xratio)
+			);
+		}
+	}
 
 	/**
      * Draw waterfall
@@ -24,26 +71,22 @@
             maxTime = 0,
 			n = 0,
 			containerID = 'waterfall-div',
-			closescript = 'var yaft_wf_cnt = document.getElementById("'+containerID+'"); yaft_wf_cnt.style.visibility="hidden";',
 			rowHeight = 10,
 			rowPadding = 2,
-			barOffset = 200;
+			barOffset = 200,
+			container = d.createElement('div'),
+			width = 1000,
+			height = (entries.length + 1) * (rowHeight + rowPadding), // +1 for axis
+			intervalTimeFrame = 1000, //1000ms and can be configurable 100, 200, 500, 1000, 2000
+			svg = createSVG(width, height);
 
 		for(n = 0; n < entries.length; n++) {
 			maxTime = Math.max(maxTime, entries[n].durationFromNStart);
 		}
 
-		var container = document.getElementById(containerID),
-			width = 1000,
-			height = (entries.length + 1) * (rowHeight + rowPadding), // +1 for axis
-			svg = createSVG(width, height);
-
-		
-		container = document.createElement('div');
 		container.id = containerID;
-
-		container.style.cssText = 'background:#fff;border: 2px solid #000;margin:5px;position:absolute;top:0px;left:0px;z-index:99999;margin:0px;padding:0px;';
-		document.body.appendChild(container);
+		container.style.cssText = 'background:#fff;border: 2px solid #000;margin:5px;position:absolute;top:0px;left:0px;z-index:2147483646;margin:0px;padding:0px;';
+		d.body.appendChild(container);
 
 		//calculate size of chart
 		// - max time
@@ -55,7 +98,6 @@
 
 		//width can be configurable (maxWidth) 
 		//maxTime comes from resource timing api
-		var intervalTimeFrame = 1000; //1000ms and can be configurable 100, 200, 500, 1000, 2000
 		if (maxTime <= 200){
 			intervalTimeFrame = 20;
 		} else if (maxTime > 200 && maxTime <= 500) {
@@ -99,9 +141,6 @@
 			svg.appendChild(row);
 			//console.log(JSON.stringify(entry) + "\n" );
 		}
-
-		svg.appendChild(createSVGText(2, 0, 0, rowHeight, 'font: 12px sans-serif;', 'start', 'hide', closescript));
-
 		container.appendChild(svg);
 	}
 
@@ -124,7 +163,6 @@
 			textContent += 'Response Duration:' + entry.responseDuration + '\n';
 		}
 		titEl.textContent = textContent;
-
 		return titEl;
 	}
 
@@ -286,7 +324,6 @@
 		el.setAttribute('dy', dy);
 		el.setAttribute('style', style);
 		el.setAttribute('text-anchor', anchor);
-
 		if (evt) {
 			el.setAttribute('onclick', evt);
 		}
@@ -301,18 +338,26 @@
 	//Draw reporting section starts
 	function closeReport(){
 		var style = d.createElement('style'),
-			css = '.aft-data-containter {' +
-						'display: none;' +
-					'} \n ';
+			css = '.aft-data-containter {display: none;} #waterfall-div {display:none;}';
 		style.setAttribute('type', 'text/css');
 		style.appendChild(d.createTextNode(css));
 		d.getElementsByTagName('head')[0].appendChild(style);
-
-
 	}
 
 	function drawData(modData) {
-		var el = d.createElement('div');
+		var el = d.createElement('div'),
+                         resTimes,
+                         resCount = modData.resources.length,
+                         n;
+
+                resTimes = '<li> Resource load times: ';
+                for(n=0; n < resCount; n += 1) { 
+                        resTimes = resTimes + '<li><a href="' + 
+                                   modData.resources[n].url + 
+                                   '" title="' + 
+                                   modData.resources[n].url + '">' +  
+                                   Math.round(modData.resources[n].durationFromNStart) + ' ms </a></li>';
+                }      
 
 		el.className = 'aft-data-containter';
 		el.innerHTML = '<div class="aft-data"><ul>'+
@@ -320,6 +365,7 @@
 								'<li>Load time: ' + Math.round(modData.loadTime) + ' ms</li>'+
 								'<li>Coverage: ' + Math.round(modData.coveragePercentage) + '%</li>'+
 								'<li>In viewport: ' + modData.inViewPort + '</li>'+
+                                                                 resTimes+
 							'</ul></div>';
 		return el;
 	}
@@ -347,9 +393,9 @@
 						'text-align: left;' +
 						'position: relative;' +
 						'height: 0px;' +
-						'z-index: 99999;' +
+						'z-index: 2147483645;' +
 					'}' +
-					'.aft-data {' +
+					'.aft-data, .aft-data a {' +
 						'color: rgb(200, 200, 200); ' +
 						'color: rgba(255, 255, 255, .7); ' +
 						'background: rgb(100, 100, 100); ' +
@@ -367,35 +413,84 @@
 		style.appendChild(d.createTextNode(css));
 		d.getElementsByTagName('head')[0].appendChild(style);
 	}
+	function getExtraElement (extData, data) {
+		var extraDataName = extData.name,
+			extraDataTitle = extData.title,
+			extraDataVal = extData.value;
 
-	function drawReport(data) {
+		if (!extraDataTitle && extraDataName) {
+			extraDataTitle = extraDataName;
+		}
+		if (!extraDataVal && extraDataName && data && data[extraDataName]) {
+			extraDataVal = data[extraDataName];
+		}
+		if (extData.isNumeric && extData.needsRounding) {
+			extraDataVal = Math.round(extraDataVal);
+		}
+		return '<li>' + extraDataTitle + ': ' + extraDataVal + '</li>';
+	}
+	function removeReport() {
+		var el, elems;
+		el = document.getElementById('aft-data-containter');
+		if (el) {
+			d.body.removeChild(el);
+		}
+		el = document.getElementById('waterfall-div');
+		if (el) {
+			d.body.removeChild(el);
+		}
+		elems = document.getElementsByClassName('aft-data-containter');
+		if (elems && elems.length) {
+			while(elems.length > 0){
+				elems[0].parentNode.removeChild(elems[0]);
+			}
+		}
+	}
+	function drawReport (data, aftIntervals) {
 		var el,
 			wf,
+			visProgess,
 			key,
+			i = 0,
+			extraDataLen = extraData.length,
+			extraDataTitle = '',
+			extraDataVal = '',
+			extraDataName = '',
+			innerLiHtml ='',
 			mods;
 		if (w.YAFT === undefined && data === undefined) {
 			return false;
 		}
-
+		removeReport();
 		drawReportStyle();
 
 		el = d.createElement('div');
+		//el.id = ""
 		el.className = 'aft-data-containter';
+		el.id = 'aft-data-containter';
 		el.style.position = 'absolute';
 		el.style.top = '0px';
 		el.style.right = '0px';
-		el.style.zIndex = '1000000';
-		el.innerHTML = '<div class="aft-data"><ul>'+
-								'<li>PLT: ' +  Math.floor(data.pageLoadTime) + '</li>'+
-								'<li>AFT: ' + Math.floor(data.aft) + '</li>'+
-								'<li>Visually Complete: ' + Math.floor(data.visuallyComplete) + '</li>'+
-								'<li>HTTP Requests PLT: ' + data.httpRequests.onloadCount + ' (Cached: '+ data.httpRequests.onloadCached +')</li>'+
-								'<li>HTTP Requests: ' + data.httpRequests.count + ' (Cached: '+ data.httpRequests.cached +')</li>'+
-								'<li>Start Render: ' +  Math.floor(data.startRender) + '</li>'+
-								'<li>Dom Interactive: ' +  Math.floor(data.domInteractive) + '</li>'+
-								'<li>Total Coverage: ' + Math.round(data.totalCoveragePercentage) +'%</li>'+
-								'<li>N Total Coverage: ' + Math.round(data.normTotalCoveragePercentage) +'%</li>'+
-							'</ul>' +
+		el.style.zIndex = '2147483646';
+		if (data.aft) innerLiHtml += '<li>AFT: ' + Math.floor(data.aft) + '</li>';
+		if (data.pageLoadTime) innerLiHtml += '<li>PLT: ' + data.pageLoadTime + '</li>';
+		if (data.domContentLoaded) innerLiHtml += '<li>DomContentLoaded: ' +  Math.floor(data.domContentLoaded) + '</li>';
+		if (data.startRender) innerLiHtml += '<li>Start Render: ' +  Math.floor(data.startRender) + '</li>';
+		if (data.domInteractive) innerLiHtml += '<li>Dom Interactive: ' +  Math.floor(data.domInteractive) + '</li>';
+		if (data.visuallyComplete) innerLiHtml += '<li>Visually Complete: ' + Math.floor(data.visuallyComplete) + '</li>';
+		if (data.httpRequests) innerLiHtml += '<li>HTTP Requests PLT: ' + data.httpRequests.onloadCount + ' (Cached: '+ data.httpRequests.onloadCached +')</li>';
+		if (data.httpRequests) innerLiHtml += '<li>HTTP Requests: ' + data.httpRequests.count + ' (Cached: '+ data.httpRequests.cached +')</li>';
+		if (data.totalCoveragePercentage) innerLiHtml += '<li>Total Coverage: ' + Math.round(data.totalCoveragePercentage) +'%</li>';
+		if (data.normTotalCoveragePercentage) innerLiHtml += '<li>N Total Coverage: ' + Math.round(data.normTotalCoveragePercentage) +'%</li>';
+
+		if (extraDataLen > 0) {
+			for (i = 0; i < extraDataLen; i += 1) {
+				innerLiHtml += getExtraElement(extraData[i], data);
+			}
+		}
+
+		el.innerHTML = '<div class="aft-data"><ul id="yaft-data-container">'+innerLiHtml+'</ul>' +
+							'<div id="aft-report-visprogress" style="height:150px;border:solid 1px white;"></div>'+
 							'<a id="aft-report-waterfall" style="position:absolute;top:0px;right:15px;color:white;border:1px solid white;" href="#">WF</a>' +
 							'<a id="aft-report-close" style="position:absolute;top:0px;right:0px;color:white;border:1px solid white;" onclick="YAFT_REPORT.closeReport();" href="#">X</a>' +
 						'</div>';
@@ -409,13 +504,27 @@
 
 		wf = d.getElementById('aft-report-waterfall');
 		wf.onclick = function(){
-			drawWaterfall(data);
+			if (!isWFDrawn) {
+				drawWaterfall(data);
+				isWFDrawn = true;
+				isWFShown = true;
+			} else {
+				toggleWaterfall();
+			}
 		};
+
+		visProgess = d.getElementById('aft-report-visprogress');
+		drawVisReport(visProgess, aftIntervals);
+		//alert(visProgess.offsetWidth + ' x ' + visProgess.offsetHeight);
+
 	}
 	w.YAFT_REPORT = {
 		drawReport: drawReport,
 		drawWaterfall: drawWaterfall,
-		closeReport: closeReport
+		removeReport: removeReport,
+		closeReport: closeReport,
+		addExtra: addExtra,
+		toggleWaterfall: toggleWaterfall
 	};
 	//Reporting section ends
 })(window, document);
