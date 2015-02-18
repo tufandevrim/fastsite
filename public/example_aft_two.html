@@ -74,7 +74,7 @@
 		};
 		YAFT.init(yaftConfig, function(data,error) {
 			if (!error) {
-				if (console) console.log(data);
+				if (window.console) console.log(data);
 			}
 		});
 
@@ -91,7 +91,7 @@
 
 			var getRrdMainImg = function(){
 				var imgLoadTime = '1'+Math.floor(Math.random()*10)+'00';
-				if (console) console.log(imgLoadTime);
+				if (window.console) console.log(imgLoadTime);
 				return '//fastsite.herokuapp.com/delayasset/'+imgLoadTime+'/main.png';
 			};
 
@@ -127,7 +127,7 @@
 
 						YAFT.AFT2.end(function(data, error){
 							if (data) {
-								if (console) console.log(data);
+								if (window.console) console.log(data);
 							}
 						});
 					}
