@@ -5,7 +5,8 @@
 		return;
 	}
 	//private variables
-	var perf,
+	var version = '0.2.1',
+		perf,
 		isInitialized = false,
 		perfExists = false,
 		showReport = false,
@@ -454,9 +455,9 @@
 
 		for (modId in mods){
 			if (mods.hasOwnProperty(modId)) {
-				//if (!modulesReport[modId]) {
+				if (!modulesReport[modId]) {
 					modulesReport[modId] = getModuleReport(mods[modId]);
-				//} 
+				}
 			}
 		}
 		return modulesReport;
@@ -563,11 +564,19 @@
 		} else {
 			//Custom report
 			isCustom = true;
-			if (customReport.modStart) {
-				modStart = customReport.modStart;
-			}
-			if (customReport.modEnd) {
-				modEnd = customReport.modEnd;
+			modStart = customReport.modStart ? customReport.modStart : modStart;
+			modEnd = customReport.modEnd ? customReport.modEnd : modEnd;
+			if (aft2StartTime) {
+				if (modStart > aft2StartTime) {
+					modStart -= aft2StartTime;
+				} else {
+					modStart = 0;
+				}
+				if (cmodEnd > aft2StartTime) {
+					modEnd -= aft2StartTime;
+				} else {
+					modEnd = 0;
+				}
 			}
 		}
 
@@ -710,6 +719,7 @@
 
 		//first remove the report
 		if (showReport === true && confs.canShowVisualReport && w.YAFT_REPORT && w.YAFT_REPORT.removeReport) {
+			w.YAFT_REPORT.removeExtras();
 			w.YAFT_REPORT.removeReport();
 		}
 		//if aft2 and aft setTimeout id are on, kill it
@@ -783,6 +793,7 @@
 
 				if (callback) {
 					callback(data);
+					YAFT.data.push(data);
 				}
 				//lastly draw the report
 				if (showReport === true && confs.canShowVisualReport && w.YAFT_REPORT && w.YAFT_REPORT.drawReport) {
@@ -902,6 +913,7 @@
 			YAFT.logToConsole(data);
 			YAFT.logToConsole(aftData.aftIntervals);
 			callback(data);
+			YAFT.data.push(data);
 		}
 
 		//execute post plugins after the callback
@@ -945,6 +957,7 @@
 	}
 
 	w.YAFT = {
+		data: [],
 		/**
 		 * triggers YAFT's final perf metric calculations. If you want to use this function, run YAFT.init first.
 		 * @param {string} evnt event name. callback

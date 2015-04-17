@@ -27,6 +27,9 @@
 			dataContainer.appendChild(extElem);
 		}
 	}
+	function removeExtras() {
+		extraData = [];
+	}
 
 	function toggleWaterfall() {
 		var yaftWfCnt = document.getElementById('waterfall-div');
@@ -524,6 +527,7 @@
 		removeReport: removeReport,
 		closeReport: closeReport,
 		addExtra: addExtra,
+		removeExtras: removeExtras,
 		toggleWaterfall: toggleWaterfall
 	};
 	//Reporting section ends

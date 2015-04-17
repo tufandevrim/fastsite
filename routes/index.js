@@ -34,6 +34,22 @@ exports.delayedAsstes = function(req, res){
 	},addlatency);
 };
 
+exports.delayedAssetJS = function(req, res){
+	var fs = require('fs'),
+		asset,
+		addlatency = req.param('delay') || 1000,
+		assetName = req.param('asset');// || 'header.png';
+
+	asset = fs.readFileSync('./public/js/'+assetName);
+	res.setHeader("Timing-Allow-Origin", "*");
+	res.writeHead(200, {'Content-Type': 'application/javascript' });
+	setInterval(function() {
+		res.end(asset);
+		//res.end('Delayed: ' + addlatency + ' ms\nAsset: ' + assetName);
+	},addlatency);
+};
+
+
 exports.cacheAsset = function(req, res){
 	var fs = require('fs'),
 		asset,
@@ -144,8 +160,6 @@ exports.delayBeacon = function(req, res){
 		res.redirect(302, 'http://l.yimg.com/os/mit/media/m/base/images/transparent-649ba6f.png');
 	},addlatency);
 };
-
-
 
 
 
