@@ -95,11 +95,13 @@ if (mongoUser && mongoPass) {
             mongoEnabled = false;
         } else {
             mongoEnabled = true;
+            /*
             app.use(express.session({
                 store: new MongoStore({
                     mongoose_connection: monDB.connection
                 })
             }));
+			*/
         }
     });
 } else {
