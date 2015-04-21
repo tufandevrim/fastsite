@@ -15,7 +15,7 @@ var dust_engine        = require('dustjs-linkedin');
 var template_engine    = 'dust';
 
 // all environments
-app.set('port', process.env.PORT || 3000);
+app.set('port', process.env.PORT || 4000);
 app.set('views', __dirname + '/views');
 
 //Set the template engine to dust
@@ -26,15 +26,15 @@ if ( template_engine == 'dust' ) {
     app.engine('dust', cons.dust);
 	app.set('template_engine', template_engine);
 } 
-
+app.set('template_engine', template_engine);
 app.set('view engine', template_engine);
-
-
 app.use(express.compress());
 app.use(express.favicon());
 app.use(express.logger('dev'));
-app.use(express.bodyParser());
+app.use(express.json());
+app.use(express.urlencoded());
 app.use(express.methodOverride());
+app.use(express.cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // development only
@@ -74,11 +74,6 @@ app.get('/mobilehlredirect', routes.mobilehlredirect);
 
 app.get('/delayxhr/:delay', routes.delayXHR);
 
-
-
-
-
-
 //==============================================================================================
 var mongoEnabled = false;
 var mongoose = require('mongoose');
@@ -86,6 +81,9 @@ var MongoStore = require('connect-mongo')(express);
 var mongoUser = process.env.MONGODB_USERNAME;
 var mongoPass = process.env.MONGODB_PASSWORD;
 var monDB;
+var Schema;
+var PerfSchema;
+var PerfModel;
 
 if (mongoUser && mongoPass) {
     monDB = mongoose.connect('mongodb://'+mongoUser+':'+mongoPass+'@ds061601.mongolab.com:61601/perf_entries', function (error) {
@@ -95,57 +93,55 @@ if (mongoUser && mongoPass) {
             mongoEnabled = false;
         } else {
             mongoEnabled = true;
-            /*
             app.use(express.session({
                 store: new MongoStore({
                     mongoose_connection: monDB.connection
                 })
             }));
-			*/
+            Schema = mongoose.Schema;
+            PerfSchema = new Schema({
+                timeToFirstByte:            Number,
+                timeToLastByte:             Number,
+                domInteractive:             Number,
+                domContentLoaded:           Number,
+                domComplete:                Number,
+                timeBackend:                Number,
+                timeFrontend:               Number,
+                requests:                   Number,
+                requestsToDomContentLoaded: Number,
+                requestsToDomComplete:      Number,
+                bodySize:                   Number,
+                bodyHTMLSize:               Number,
+                htmlCount:                  Number,
+                htmlSize:                   Number,
+                cssCount:                   Number,
+                cssSize:                    Number,
+                jsCount:                    Number,
+                jsSize:                     Number,
+                imageCount:                 Number,
+                imageSize:                  Number,
+                DOMelementsCount:           Number,
+                DOMelementMaxDepth:         Number,
+                cacheHits:                  Number,
+                cacheMisses:                Number,
+                notFound:                   Number,
+                jsErrors:                   Number,
+                redirects:                  Number,
+                testId:                     String,
+                url:                        String,
+                scheduleId:                 Number,
+                location:                   String,
+                device:                     String,
+                runs:                       Number,
+                created:                    Date
+            });
+            PerfModel = monDB.model('perf_entries', PerfSchema);
         }
     });
 } else {
     console.log('NO MONGO Credentials');
 }
 
-var Schema = mongoose.Schema;
-var PerfSchema = new Schema({
-    timeToFirstByte:            Number,
-    timeToLastByte:             Number,
-    domInteractive:             Number,
-    domContentLoaded:           Number,
-    domComplete:                Number,
-    timeBackend:                Number,
-    timeFrontend:               Number,
-    requests:                   Number,
-    requestsToDomContentLoaded: Number,
-    requestsToDomComplete:      Number,
-    bodySize:                   Number,
-    bodyHTMLSize:               Number,
-    htmlCount:                  Number,
-    htmlSize:                   Number,
-    cssCount:                   Number,
-    cssSize:                    Number,
-    jsCount:                    Number,
-    jsSize:                     Number,
-    imageCount:                 Number,
-    imageSize:                  Number,
-    DOMelementsCount:           Number,
-    DOMelementMaxDepth:         Number,
-    cacheHits:                  Number,
-    cacheMisses:                Number,
-    notFound:                   Number,
-    jsErrors:                   Number,
-    redirects:                  Number,
-    testId:                     String,
-    url:                        String,
-    scheduleId:                 Number,
-    location:                   String,
-    device:                     String,
-    runs:                       Number,
-    created:                    Date
-});
-var PerfModel = monDB.model('perf_entries', PerfSchema);
 
 //Hard Coded Scheduled Tasks
 var scheduledTasks = [
@@ -168,7 +164,7 @@ app.post('/phantomas/setclientstatus', function(req, res) {
         status: 200
     };
     pmasAgents[req.body.clientUrl] = new Date();
-    
+
     res.setHeader('Content-Type', 'application/json');
     if (req.body.canRunScheduleTasks && req.body.canRunScheduleTasks !== 'false') {
         resResult.scheduledTasks = scheduledTasks;
@@ -181,7 +177,6 @@ app.post('/phantomas/setclientstatus', function(req, res) {
 //Report a task
 app.post('/phantomas/reporttaskresult', function(req, res) {
     var key;
-    var metrics = req.body.taskResult.data.metrics;
     var recEntry;
     var resMetrics = {
         timeToFirstByte:            -1,
@@ -219,6 +214,15 @@ app.post('/phantomas/reporttaskresult', function(req, res) {
         runs:                       1,
         created:                    new Date().getTime()
     };
+    var metrics;
+    res.setHeader('Content-Type', 'application/json');
+
+    if (req.body && req.body.taskResult && req.body.taskResult.data && req.body.taskResult.data.metrics) {
+        metrics = req.body.taskResult.data.metrics;
+    } else {
+        res.status(500).json({status:'No metrics available in the request'});
+        return;
+    }
 
     for(key in resMetrics) {
         if (resMetrics.hasOwnProperty(key) && metrics.hasOwnProperty(key)) {
@@ -235,18 +239,15 @@ app.post('/phantomas/reporttaskresult', function(req, res) {
     resMetrics.url = req.body.taskResult.url;
     resMetrics.scheduleId = req.body.taskResult.scheduleId;
 
-    res.setHeader('Content-Type', 'application/json');
-
     if (mongoEnabled) {
         recEntry = new PerfModel(resMetrics);
         res.json({status: 'success'});
         recEntry.save(function(err){
             if (err) {
                 console.log(err);
-                res.status(500).json({status:'failure'});
+                res.status(500).json({status:'MONGO DB SAVE failure'});
             } else {
-                console.log("SUCCESS!!!!!!!!!!!!!!");
-                res.json({status: 'success'});
+                res.json({status: 'MONGO DB SAVE success'});
             }
         });
     } else {
@@ -255,7 +256,6 @@ app.post('/phantomas/reporttaskresult', function(req, res) {
 
 });
 //==============================================================================================
-
 
 
 http.createServer(app).listen(app.get('port'), function(){
