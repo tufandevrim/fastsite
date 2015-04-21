@@ -145,8 +145,8 @@ if (mongoUser && mongoPass) {
 
 //Hard Coded Scheduled Tasks
 var scheduledTasks = [
-    {scheduleId:1, url:'https://www.google.com', runs: 1, device: 'desktop', schedule: {period:"minute", every: "2"}, location:'US'},
-    {scheduleId:2, url:'https://www.yahoo.com', runs: 1, device: 'desktop', schedule: {period:"minute", every: "2"}, location:'US'}
+    {scheduleId:1, url:'https://www.google.com', runs: 1, device: 'desktop', schedule: {period:"minute", every: "30"}, location:'US'},
+    {scheduleId:2, url:'https://www.yahoo.com', runs: 1, device: 'desktop', schedule: {period:"minute", every: "30"}, location:'US'}
 ];
 
 //PMas Agents
