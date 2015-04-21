@@ -13,6 +13,8 @@
     "express": "3.4.0",
     "consolidate": "*",
     "dustjs-helpers": "*",
-    "dustjs-linkedin": "*"
+    "dustjs-linkedin": "*",
+    "mongoose": "~3.6.19",
+    "connect-mongo": "~0.4.0"
   }
 }
