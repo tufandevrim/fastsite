@@ -1,0 +1,28 @@
+{>layout/}
+{<content}
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h4>Phantomas Agents</h4>
+    </div>
+    <div class="panel-body">
+		<table class="table table-striped table-bordered">
+			<tr>
+				<th>AGENT URL</th>
+				<th>AGENT PORT</th>
+				<th>MAC ID</th>
+				<th>RUNS SCHEDULED TASK</th>
+				<th>LAST HANDSHAKE</th>
+			</tr>
+			{#agents}
+			<tr>
+				<td>{clientUrl}</td>
+				<td>{clientPort}</td>
+				<td>{clientMAC}</td>
+				<td>{canRunScheduleTasks}</td>
+				<td>{lastHandshake}</td>
+			</tr>
+			{/agents}
+		</table>
+	</div>
+</div>
+{/content}

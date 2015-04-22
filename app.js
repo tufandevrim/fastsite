@@ -77,6 +77,7 @@ app.get('/delayxhr/:delay', routes.delayXHR);
 //==============================================================================================
 var mongoEnabled = false;
 var mongoose = require('mongoose');
+var moment = require('moment');
 var MongoStore = require('connect-mongo')(express);
 var mongoUser = process.env.MONGODB_USERNAME;
 var mongoPass = process.env.MONGODB_PASSWORD;
@@ -84,6 +85,16 @@ var monDB;
 var Schema;
 var PerfSchema;
 var PerfModel;
+
+//PMas Agents
+var pmasAgents = {};
+
+//Hard Coded Scheduled Tasks
+var scheduledTasks = [
+    {scheduleId:1, url:'https://www.google.com', runs: 1, device: 'desktop', schedule: {period:"minute", every: "30"}, location:'US'},
+    {scheduleId:2, url:'https://www.yahoo.com', runs: 1, device: 'desktop', schedule: {period:"minute", every: "30"}, location:'US'}
+];
+
 
 if (mongoUser && mongoPass) {
     monDB = mongoose.connect('mongodb://'+mongoUser+':'+mongoPass+'@ds061601.mongolab.com:61601/perf_entries', function (error) {
@@ -142,15 +153,45 @@ if (mongoUser && mongoPass) {
     console.log('NO MONGO Credentials');
 }
 
+//Show active agents
+app.get('/phantomas/agents', function(req, res) {
+    var agents = [];
+    var agent;
+    for (agent in pmasAgents){
+        if (pmasAgents.hasOwnProperty(agent)) {
+            agents.push(pmasAgents[agent]);
+        }
+    }
+    res.render('perf_pmas_agents_list', {
+        agents: agents,
+        title: "List of Pmas agents"
+    });
+});
 
-//Hard Coded Scheduled Tasks
-var scheduledTasks = [
-    {scheduleId:1, url:'https://www.google.com', runs: 1, device: 'desktop', schedule: {period:"minute", every: "30"}, location:'US'},
-    {scheduleId:2, url:'https://www.yahoo.com', runs: 1, device: 'desktop', schedule: {period:"minute", every: "30"}, location:'US'}
-];
+//Get all perf entries
+app.get('/phantomas/perf_entries/list', function(req, res) {
+    var allEntries = [];
+    function respond () {
+        res.render('perf_entries_list', {
+            perf_entries: allEntries,
+            title: "List all Perf Entries"
+        });
+    }
+    if (mongoEnabled) {
+        PerfModel.find(function(err, entries){
+            if (err) {
+                console.log(err);
+                respond();
+            } else {
+                allEntries = entries;
+                respond();
+            }
+        });
+    } else {
+        respond();
+    }
+});
 
-//PMas Agents
-var pmasAgents = {};
 
 //Get scheduled tasks
 app.get('/phantomas/getscheduledtask', function(req, res) {
@@ -163,7 +204,13 @@ app.post('/phantomas/setclientstatus', function(req, res) {
     var resResult = {
         status: 200
     };
-    pmasAgents[req.body.clientUrl] = new Date();
+    pmasAgents[req.body.clientUrl] = {
+        lastHandshake: moment(),
+        clientUrl: req.body.clientUrl,
+        clientPort: req.body.clientPort,
+        clientMAC:  req.body.clientMAC,
+        canRunScheduleTasks: req.body.canRunScheduleTasks
+    };
 
     res.setHeader('Content-Type', 'application/json');
     if (req.body.canRunScheduleTasks && req.body.canRunScheduleTasks !== 'false') {
@@ -241,7 +288,6 @@ app.post('/phantomas/reporttaskresult', function(req, res) {
 
     if (mongoEnabled) {
         recEntry = new PerfModel(resMetrics);
-        res.json({status: 'success'});
         recEntry.save(function(err){
             if (err) {
                 console.log(err);
@@ -256,7 +302,6 @@ app.post('/phantomas/reporttaskresult', function(req, res) {
 
 });
 //==============================================================================================
-
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
