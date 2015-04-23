@@ -3,12 +3,17 @@
 <head>
     <title>{title}</title>
     <meta charset="UTF-8">
-    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    {#cssfile}
+        <link href="{.}" rel="stylesheet"/>
+    {/cssfile}
 </head>
 <body>
     <div>
         {+content}
         {/content}
     </div>
+    {#jsfile}
+        <script src="{.}"></script>
+    {/jsfile}
 </body>
 </html>

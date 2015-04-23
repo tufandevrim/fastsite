@@ -7,6 +7,7 @@ var express = require('express');
 var routes = require('./routes');
 var http = require('http');
 var path = require('path');
+var viewConfig = require('./config/view_config.json');
 
 var app = express();
 
@@ -35,6 +36,24 @@ app.use(express.json());
 app.use(express.urlencoded());
 app.use(express.methodOverride());
 app.use(express.cookieParser());
+
+var wrapper = function (func) {
+    return function () {
+        var template = arguments[0], jsfile = null, cssfile = null;
+        if (viewConfig.hasOwnProperty(template)) {
+            jsfile = viewConfig[template].js;
+            cssfile = viewConfig[template].css;
+        }
+        arguments[1].jsfile = jsfile;
+        arguments[1].cssfile = cssfile;
+        func.apply(this, arguments);
+    };
+};
+app.use(function (req, res, next) {
+    res.render = wrapper(res.render);
+    next();
+});
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 // development only
