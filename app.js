@@ -110,10 +110,39 @@ var pmasAgents = {};
 
 //Hard Coded Scheduled Tasks
 var scheduledTasks = [
-    {scheduleId:1, url:'https://www.google.com', runs: 1, device: 'desktop', schedule: {period:"minute", every: "30"}, location:'US'},
-    {scheduleId:2, url:'https://www.yahoo.com', runs: 1, device: 'desktop', schedule: {period:"minute", every: "30"}, location:'US'}
+    {scheduleId: 1, url:'https://www.google.com', sname: 'Google', runs: 1, device: 'desktop', schedule: {period:"minute", every: "30"}, location:'US'},
+    {scheduleId: 2, url:'https://www.yahoo.com', sname: 'Yahoo', runs: 1, device: 'desktop', schedule: {period:"minute", every: "30"}, location:'US'}
 ];
-
+//Chart Metrics
+var chartMetrics = [
+        'timeToFirstByte',
+        'timeToLastByte',
+        'domInteractive',
+        'domContentLoaded',
+        'domComplete',
+        'timeBackend',
+        'timeFrontend',
+        'requests',
+        'requestsToDomContentLoaded',
+        'requestsToDomComplete',
+        'bodySize',
+        'bodyHTMLSize',
+        'htmlCount',
+        'htmlSize',
+        'cssCount',
+        'cssSize',
+        'jsCount',
+        'jsSize',
+        'imageCount',
+        'imageSize',
+        'DOMelementsCount',
+        'DOMelementMaxDepth',
+        'cacheHits',
+        'cacheMisses',
+        'notFound',
+        'jsErrors',
+        'redirects',
+];
 
 if (mongoUser && mongoPass) {
     monDB = mongoose.connect('mongodb://'+mongoUser+':'+mongoPass+'@ds061601.mongolab.com:61601/perf_entries', function (error) {
@@ -159,6 +188,7 @@ if (mongoUser && mongoPass) {
                 redirects:                  Number,
                 testId:                     String,
                 url:                        String,
+                sname:                      String,
                 scheduleId:                 Number,
                 location:                   String,
                 device:                     String,
@@ -171,6 +201,56 @@ if (mongoUser && mongoPass) {
 } else {
     console.log('NO MONGO Credentials');
 }
+
+//Get all perf entries
+app.get('/phantomas/perf_entries/chart', function(req, res) {
+    var allEntries = [];
+    var sids = [];
+    var i;
+    var tmpSids = [];
+    var resData = [];
+    //Get sids from query param
+    if (req.query.sid) {
+        tmpSids = req.query.sid.split(',');
+        for (i = 0; i < tmpSids.length; i+=1) {
+            sids.push(parseInt(tmpSids[i], 10));
+        }
+    }
+    if (sids.length === 0) {
+        sids = [1];
+    }
+
+    for (i = 0; i < chartMetrics.length; i+=1) {
+        resData.push({
+                metric: chartMetrics[i],
+                title: chartMetrics[i],
+                ytitle: chartMetrics[i],
+                series: {}
+        });
+    }
+
+    function respond () {
+        res.render('perf_entries_chart', {
+            perf_entries: allEntries,
+            title: "Perf Entries Timelines"
+        });
+    }
+    if (mongoEnabled) {
+        PerfModel.find().where('scheduleId').in(sids).sort('scheduleId').sort('created').exec(function(err, entries){
+            if (err) {
+                console.log(err);
+                respond();
+            } else {
+
+                allEntries = entries;
+                respond();
+
+            }
+        });
+    } else {
+        respond();
+    }
+});
 
 //Show active agents
 app.get('/phantomas/agents', function(req, res) {
@@ -210,7 +290,6 @@ app.get('/phantomas/perf_entries/list', function(req, res) {
         respond();
     }
 });
-
 
 //Get scheduled tasks
 app.get('/phantomas/getscheduledtask', function(req, res) {
@@ -274,6 +353,7 @@ app.post('/phantomas/reporttaskresult', function(req, res) {
         redirects:                  -1,
         testId:                     "",
         url:                        "",
+        sname:                      "",
         scheduleId:                 0,
         location:                   "US",
         device:                     "desktop",
@@ -304,6 +384,7 @@ app.post('/phantomas/reporttaskresult', function(req, res) {
     resMetrics.created = req.body.taskResult.created;
     resMetrics.url = req.body.taskResult.url;
     resMetrics.scheduleId = req.body.taskResult.scheduleId;
+    resMetrics.sname = req.body.taskResult.sname;
 
     if (mongoEnabled) {
         recEntry = new PerfModel(resMetrics);
