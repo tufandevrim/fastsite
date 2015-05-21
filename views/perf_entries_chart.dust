@@ -1,0 +1,58 @@
+{>layout/}
+{<content}
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h4>{title}</h4>
+    </div>
+    <div class="panel-body">
+		<table id="index-table" class="table table-striped table-bordered table-hover hidden-sm hidden-xs">
+			<tbody>
+                <tr>
+                    <th>Schedule Id</th>
+                    <th>Url</th>
+                    <th>Location</th>
+                    <th>Device</th>
+                    <th>Runs</th>
+                    <th>Body Size</th>
+                    <th>Html Size</th>
+                    <th>JS Size</th>
+                    <th>CSS Size</th>
+                    <th>Image Size</th>
+                    <th>DOM Element Count</th>
+                    <th>DOM Element Max Depth</th>
+                    <th>Requests</th>
+                    <th>Requests To domContentLoaded</th>
+                    <th>domContentLoaded</th>
+                    <th>domInteractive</th>
+                    <th>Time To First Byte</th>
+                    <th>Time To Last Byte</th>
+                    <th>Time Created</th>
+                </tr>
+                {#perf_entries}
+                    <tr>
+                        <td>{scheduleId}</td>
+                        <td>{url}</td>
+                        <td>{location}</td>
+                        <td>{device}</td>
+                        <td>{runs}</td>
+                        <td>{bodySize}</td>
+                        <td>{htmlSize}</td>
+                        <td>{jsSize}</td>
+                        <td>{cssSize}</td>
+                        <td>{imageSize}</td>
+                        <td>{DOMelementsCount}</td>
+                        <td>{DOMelementMaxDepth}</td>
+                        <td>{requests}</td>
+                        <td>{requestsToDomContentLoaded}</td>
+                        <td>{domContentLoaded}</td>
+                        <td>{domInteractive}</td>
+                        <td>{timeToFirstByte}</td>
+                        <td>{timeToLastByte}</td>
+                        <td>{created}</td>
+                    </tr>
+                {/perf_entries}
+            </tbody>
+        </table>
+	</div>
+</div>
+{/content}
