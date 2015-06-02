@@ -485,7 +485,7 @@
 			resource,
 			modStart = aft2StartTime ? aft2StartRender : getModuleStartTime(),
 			modEnd = modStart,
-			childElements = mod.querySelectorAll('div, img, a, video, span, ul, li'),
+			childElements = mod.querySelectorAll('div, img, a, video, span, ul, li, figure'),
 			len = childElements.length;
 		
 		function getElemResourceUrl(el) {
@@ -572,7 +572,7 @@
 				} else {
 					modStart = 0;
 				}
-				if (cmodEnd > aft2StartTime) {
+				if (modEnd > aft2StartTime) {
 					modEnd -= aft2StartTime;
 				} else {
 					modEnd = 0;
