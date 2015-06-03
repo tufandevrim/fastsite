@@ -489,13 +489,18 @@
 			len = childElements.length;
 		
 		function getElemResourceUrl(el) {
-			var resUrl = '';
+			var resUrl = '',
+				elStyle;
+
 			if (el.nodeName === 'VIDEO') {
 				//TODO
 			} else if (el.src) {
 				resUrl = el.src;
-			} else if (el.style && el.style.backgroundImage) {
-				resUrl = el.style.backgroundImage.slice(4, -1);
+			} else {
+				elStyle = el.currentStyle || window.getComputedStyle(el, false);
+				if (elStyle && elStyle.backgroundImage) {
+					resUrl = elStyle.backgroundImage.slice(4, -1);
+				}
 			}
 			return resUrl;
 		}
