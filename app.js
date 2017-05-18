@@ -25,8 +25,8 @@ if ( template_engine == 'dust' ) {
     var dust = require('dustjs-linkedin'),
         cons = require('consolidate');
     app.engine('dust', cons.dust);
-	app.set('template_engine', template_engine);
-} 
+    app.set('template_engine', template_engine);
+}
 app.set('template_engine', template_engine);
 app.set('view engine', template_engine);
 app.use(express.compress());
@@ -49,6 +49,7 @@ var wrapper = function (func) {
         func.apply(this, arguments);
     };
 };
+
 app.use(function (req, res, next) {
     res.render = wrapper(res.render);
     next();
@@ -65,6 +66,7 @@ app.get('/delay', routes.delay);
 app.get('/delay2', routes.delay2);
 app.get('/delayasset/:delay/:asset', routes.delayedAsstes);
 app.get('/delayassetjs/:delay/:asset', routes.delayedAssetJS);
+app.get('/delayassetcss/:delay/:asset', routes.delayedAssetCSS);
 app.get('/cacheasset/:second/:asset', routes.cacheAsset);
 app.get('/hello', routes.hello);
 
@@ -406,4 +408,3 @@ app.post('/phantomas/reporttaskresult', function(req, res) {
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
-

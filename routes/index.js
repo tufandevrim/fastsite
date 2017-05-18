@@ -30,7 +30,6 @@ exports.delayedAsstes = function(req, res){
 	res.writeHead(200, {'Content-Type': 'image/png' });
 	setInterval(function() {
 		res.end(asset, 'binary');
-		//res.end('Delayed: ' + addlatency + ' ms\nAsset: ' + assetName);
 	},addlatency);
 };
 
@@ -39,30 +38,38 @@ exports.delayedAssetJS = function(req, res){
 		asset,
 		addlatency = req.param('delay') || 1000,
 		assetName = req.param('asset');// || 'header.png';
-
 	asset = fs.readFileSync('./public/js/'+assetName);
 	res.setHeader("Timing-Allow-Origin", "*");
 	res.writeHead(200, {'Content-Type': 'application/javascript' });
 	setInterval(function() {
 		res.end(asset);
-		//res.end('Delayed: ' + addlatency + ' ms\nAsset: ' + assetName);
 	},addlatency);
 };
 
+exports.delayedAssetCSS = function(req, res){
+	var fs = require('fs'),
+		asset,
+		addlatency = req.param('delay') || 1000,
+		assetName = req.param('asset');// || 'header.png';
+	asset = fs.readFileSync('./public/css/'+assetName);
+	res.setHeader("Timing-Allow-Origin", "*");
+	res.writeHead(200, {'Content-Type': 'text/css' });
+	setInterval(function() {
+		res.end(asset);
+	},addlatency);
+};
 
 exports.cacheAsset = function(req, res){
 	var fs = require('fs'),
 		asset,
 		addsecond = req.param('second') || 1000,
 		assetName = req.param('asset');// || 'header.png';
-
 	asset = fs.readFileSync('./public/img/'+assetName);
 	res.setHeader('Cache-Control', 'max-age='+addsecond);
 	res.writeHead(200, {'Content-Type': 'image/png' });
 	res.end(asset, 'binary');
-	
-};
 
+};
 
 exports.hello = function(req, res){
 	res.end('Hello world');
@@ -74,7 +81,7 @@ exports.maillogin = function(req, res){
 		title: 'Mail Landing Page',
 		action: req.query.action || 'maillogin2',
 		method: req.query.method || 'post'
-	});	
+	});
 };
 exports.maillogin2 = function(req, res){
 	res.redirect('/mailmain');
@@ -96,7 +103,7 @@ exports.chromeposter = function(req, res){
 		action: req.query.action || 'chromeposted',
 		method: req.query.method || 'post',
 		viaScript: req.query.script || false
-	});	
+	});
 };
 exports.chromeposted = function(req, res){
 	res.setHeader('Cache-Control', 'max-age=0');
@@ -160,7 +167,3 @@ exports.delayBeacon = function(req, res){
 		res.redirect(302, 'http://l.yimg.com/os/mit/media/m/base/images/transparent-649ba6f.png');
 	},addlatency);
 };
-
-
-
-
