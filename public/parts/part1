@@ -29,18 +29,24 @@
 			width: 900px;
 			height:700px;
 		}
+        .bg1 {
+            background-image: url('https://s.yimg.com/rz/d/yahoo_mail_en-US_s_f_pw_351x40_mail.png');
+        }
+        .bg2 {
+            background-image: url('https://s.yimg.com/kr/assets/sprite-dark-bd9535f9.png');
+        }
 	</style>
 
     <script src="https://www.yahoo.com/polyfill.min.js?features=promise%2Cobject.assign%2Carray.prototype.findindex%2Cintl%2Clocale-data-en-us%2Cdate-time-format-timezone%2Ctimezone-america%2Flos_angeles&amp;version=3.0.2-pre.6" defer=""></script>
     <script src="https://s.yimg.com/os/ri/2.3.0/en.js" defer=""></script>
-    <script src="/vendor" defer=""></script>
-    <script src="/mail_app" defer=""></script>
+    <script src="/vendor.js" defer=""></script>
+    <script src="/mail_app.js" defer=""></script>
     <script src="https://s.yimg.com/os/yaft/yaft-0.3.10.min.js" defer=""></script>
 </head>
 <body>
 
-	<div class="main_wrapper" style="background-image:url('https://s.yimg.com/rz/d/yahoo_mail_en-US_s_f_pw_351x40_mail.png');">
-		<div class="title" style="background-image:url('https://s.yimg.com/kr/assets/sprite-dark-bd9535f9.png');">
+	<div class="main_wrapper bg1">
+		<div class="title bg2">
 			This test page shows how ssl, dns and connection priming happens from different page. <br/>
 			Go to <a href="https://www.yahoo.com">Yahoo</a>
             <img src="https://ws.progrss.yahoo.com/progrss/v1/user/7KRP3QES3E76Q7DBHRCJQWKEIY/profile/picture">
