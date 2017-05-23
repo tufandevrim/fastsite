@@ -16,7 +16,7 @@ var dust_engine        = require('dustjs-linkedin');
 var template_engine    = 'dust';
 
 // all environments
-app.set('port', process.env.PORT || 4000);
+app.set('port', process.env.PORT || 4001);
 app.set('views', __dirname + '/views');
 
 //Set the template engine to dust
