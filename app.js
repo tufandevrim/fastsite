@@ -94,6 +94,7 @@ app.get('/mobilehlredirect', routes.mobilehlredirect);
 
 
 app.get('/delayxhr/:delay', routes.delayXHR);
+app.get('/delayhtml/:delay', routes.delayHtml);
 
 //==============================================================================================
 var mongoEnabled = false;
