@@ -168,6 +168,7 @@ exports.delayHtml = function(req, res){
 	    addlatency = req.param('delay') || 1000;
 
 	res.setHeader('Content-Type', 'text/html; charset=utf-8');
+	res.setHeader('connection', 'keep-alive');
     part1 = fs.readFileSync('./public/parts/part1');
     part2 = fs.readFileSync('./public/parts/part2');
     res.write(part1);
