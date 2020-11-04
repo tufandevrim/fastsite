@@ -1,6 +1,6 @@
 {
-  "name": "application-name",
-  "version": "0.0.1",
+  "name": "fastsite",
+  "version": "1.0.0",
   "private": true,
   "engines": {
     "node": "0.10.x",
@@ -11,12 +11,9 @@
   },
   "dependencies": {
     "express": "3.4.8",
-    "body-parser": "~1.5.2",
     "consolidate": "*",
     "dustjs-helpers": "*",
     "dustjs-linkedin": "*",
-    "moment": "^2.24.0",
-    "mongoose": "~3.6.19",
-    "connect-mongo": "~0.4.0"
+    "moment": "^2.24.0"
   }
 }

@@ -95,7 +95,7 @@ app.get('/mobilehlredirect', routes.mobilehlredirect);
 
 app.get('/delayxhr/:delay', routes.delayXHR);
 app.get('/delayhtml/:delay', routes.delayHtml);
-
+/*
 //==============================================================================================
 var mongoEnabled = false;
 var mongoose = require('mongoose');
@@ -405,6 +405,7 @@ app.post('/phantomas/reporttaskresult', function(req, res) {
 
 });
 //==============================================================================================
+*/
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
