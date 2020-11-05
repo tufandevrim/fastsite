@@ -13,7 +13,6 @@
     "express": "3.4.8",
     "consolidate": "*",
     "dustjs-helpers": "*",
-    "dustjs-linkedin": "*",
-    "moment": "^2.24.0"
+    "dustjs-linkedin": "*"
   }
 }
