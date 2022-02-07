@@ -1,4 +1,4 @@
-/*! For license information please see track_base_4acf7e909c2dc6af4a16.js.LICENSE.txt */
+/*! For license information please see track_base_eb16952bb418d726f749.js.LICENSE.txt */
 !function(e){var t={}
 function r(n){if(t[n])return t[n].exports
 var o=t[n]={i:n,l:!1,exports:{}}
@@ -290,6 +290,7 @@ console.log.apply(console,t)}}function qe(e,t,r,n){Ee("client_view",e,t=t||{},r,
 t.default=n
 if("undefined"!=typeof window){window.nd=window.nd||{}
 window.nd.flaskTrack=n
+window.unstable__preload_features=window.unstable__preload_features||{}
 window.unstable__preload_features.enable_beacon_api=!0}},"./node_modules/axios/index.js":function(e,t,r){e.exports=r("./node_modules/axios/lib/axios.js")},"./node_modules/axios/lib/adapters/xhr.js":function(e,t,r){"use strict"
 var n=r("./node_modules/axios/lib/utils.js")
 var o=r("./node_modules/axios/lib/core/settle.js")
@@ -816,4 +817,4 @@ return t||o(a)}},"./node_modules/webpack/buildin/global.js":function(e,t){var r
 r=function(){return this}()
 try{r=r||new Function("return this")()}catch(e){"object"==typeof window&&(r=window)}e.exports=r}})
 
-//# sourceMappingURL=track_base_4acf7e909c2dc6af4a16.js.map
+//# sourceMappingURL=track_base_eb16952bb418d726f749.js.map
