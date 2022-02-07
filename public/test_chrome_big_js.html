@@ -1,15 +1,20 @@
 <!DOCTYPE html>
 <html>
 <head>
-<!-- <script src="https://d19rpgkrjeba2z.cloudfront.net/static/gen/12_92c304b748bcacd4425a.js"></script> -->
+    <script src="js/test_tracking.js"></script>
 </head>
 <body>
     FOOBAR
 </body>
 <script>
-    // start chunk loading
-    let s = document.createElement("script");
-    s.src = "https://d19rpgkrjeba2z.cloudfront.net/static/gen/12_92c304b748bcacd4425a.js";
-    document.body.appendChild(s);
+    nd.flaskTrack.initialize(
+        'flask.us.nextdoor.com',
+        '2',
+        'ND_TRACKING_TEST_BUILD', // you need to figure your web build version id
+        'ND_TRACKING_TEST', // you need to figure out who is the user or dont set this
+        'US',
+        false,
+        'production'
+    );
 </script>
 </html>
