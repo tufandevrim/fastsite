@@ -1,4 +1,4 @@
-/*! For license information please see track_base_d7f871062bfbc6a38e34.js.LICENSE.txt */
+/*! For license information please see track_base_6a5d919e889899348eab.js.LICENSE.txt */
 !function(e){var t={}
 function r(n){if(t[n])return t[n].exports
 var o=t[n]={i:n,l:!1,exports:{}}
@@ -157,8 +157,9 @@ var se=[]
 var ue=""
 var ce
 var le=E.a.CancelToken.source()
-var de=!1
-navigator&&navigator.sendBeacon&&window&&window.unstable__preload_features&&!0===window.unstable__preload_features.enable_beacon_api&&(de=!0)
+var de=!0
+window&&window.unstable__preload_features&&!1===window.unstable__preload_features.enable_beacon_api&&(de=!1)
+navigator&&navigator.sendBeacon||(de=!1)
 var fe=C.a.parse(null===(P=document)||void 0===P||null===(L=P.location)||void 0===L||null===(F=L.search)||void 0===F?void 0:F.slice(1))
 var pe=(null==fe?void 0:fe.embedded_webview)||-1!==(null===(U=document)||void 0===U||null===(q=U.location)||void 0===q||null===(B=q.pathname)||void 0===B?void 0:B.indexOf("embedded_webview"))
 var ve=fe&&fe.ct?"email":"no-referrer"
@@ -816,4 +817,4 @@ return t||o(a)}},"./node_modules/webpack/buildin/global.js":function(e,t){var r
 r=function(){return this}()
 try{r=r||new Function("return this")()}catch(e){"object"==typeof window&&(r=window)}e.exports=r}})
 
-//# sourceMappingURL=track_base_d7f871062bfbc6a38e34.js.map
+//# sourceMappingURL=track_base_6a5d919e889899348eab.js.map
